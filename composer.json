@@ -1,0 +1,33 @@
+{
+    "name": "ricadesign/laravel-kiwi-scanner",
+    "type": "library",
+    
+    "require": {
+        "laravel/framework": "^7.0",
+        "php": "^7.3",
+        "nesbot/carbon": "^2.0@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ricadesign\\LaravelKiwiScanner\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ricadesign\\LaravelKiwiScanner\\LaravelKiwiScannerServiceProvider"
+            ]
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Payetus",
+            "email": "payet91@gmail.xom"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require-dev": {
+        "laravel/tinker": "^3.0"
+    }
+}
