@@ -2,7 +2,10 @@
 
 namespace Ricadesign\LaravelKiwiScanner;
 
-class FlightQuery
+/**
+ * Information about a flight search query.
+ */
+class FlightSearchQuery
 {
     public $origins;
     public $destinations;

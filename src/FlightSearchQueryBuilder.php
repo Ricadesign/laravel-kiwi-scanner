@@ -2,7 +2,10 @@
 
 namespace Ricadesign\LaravelKiwiScanner;
 
-class FlightQueryBuilder
+/**
+ * Builder class for flight search queries.
+ */
+class FlightSearchQueryBuilder
 {
     private $queryProcessor;
 
@@ -64,12 +67,12 @@ class FlightQueryBuilder
     }
 
     function groupByDay() {
-        $this->groupBy = FlightQuery::GROUP_BY_DAY;
+        $this->groupBy = FlightSearchQuery::GROUP_BY_DAY;
         return $this;
     }
 
     function getFlights() {
-        $query = new FlightQuery();
+        $query = new FlightSearchQuery();
         $query->origins =  $this->origins;
         $query->destinations =  $this->destinations;
         $query->daysBetweenFlights =  $this->daysBetweenFlights;

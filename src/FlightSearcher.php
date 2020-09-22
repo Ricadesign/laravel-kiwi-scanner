@@ -5,7 +5,10 @@ namespace Ricadesign\LaravelKiwiScanner;
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
 
-class FlightQueryProcessor
+/**
+ * High level interface over the Kiwi Locations API.
+ */
+class FlightSearcher
 {
     private $api;
 
@@ -92,6 +95,9 @@ class FlightQueryProcessor
     }
 
     private function parseTimeStampAndInferTimeZone($timeStampLocal, $timeStampUTC) {
+        // The Kiwi API responses do not contain the timezone of the origin / destination,
+        // but they contain the timestamp of the flight in both local and UTC time,
+        // from which the time zone offset can be inferred
         $timeZoneOffsetSeconds = $timeStampLocal - $timeStampUTC;
         assert(($timeZoneOffsetSeconds % 60) === 0);
         $timezone = CarbonTimeZone::createFromMinuteOffset($timeZoneOffsetSeconds / 60);
@@ -101,16 +107,16 @@ class FlightQueryProcessor
 
     private function applyPostApiQueryFilters($flights, $parameters) {
         if (isset($parameters->minimumMinutesInDestination)) {
-            $flights = array_filter($flights, function($f) use ($parameters) {
+            $flights = array_values(array_filter($flights, function($f) use ($parameters) {
                 return $f->minutesInDestination >= $parameters->minimumMinutesInDestination;
-            });
+            }));
         }
 
         return $flights;
     }
 
     private function aggregateResults($flights, $parameters) {
-        if (isset($parameters->groupBy) && $parameters->groupBy === FlightQuery::GROUP_BY_DAY) {
+        if (isset($parameters->groupBy) && $parameters->groupBy === FlightSearchQuery::GROUP_BY_DAY) {
             $flightsByDate = [];
             foreach ($flights as $f) {
                 $dayKey = $f->journeyFlightDepartureTime->format("Y-m-d");
@@ -119,5 +125,7 @@ class FlightQueryProcessor
             ksort($flightsByDate);
             return $flightsByDate;
         }
+
+        return $flights;
     }
 }

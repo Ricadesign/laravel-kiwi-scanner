@@ -2,6 +2,9 @@
 
 namespace Ricadesign\LaravelKiwiScanner;
 
+/**
+ * Represents an airport as a flight origin or destination location.
+ */
 class AirportFlightLocation extends FlightLocation
 {
     private $airportCode;
