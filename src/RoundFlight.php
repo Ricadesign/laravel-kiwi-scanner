@@ -16,4 +16,5 @@ class RoundFlight
     public $returnFlightDepartureTime;
     public $returnFlightArrivalTime;
     public $minutesInDestination;
+    public $bookingToken;
 }

@@ -12,6 +12,7 @@ class FlightQueryBuilder
     private $minimumMinutesInDestination;
     private $startDate;
     private $endDate;
+    private $numAdults;
     private $groupBy;
 
     public function __construct($queryProcessor) {
@@ -23,6 +24,7 @@ class FlightQueryBuilder
         $this->minimumMinutesInDestination = null;
         $this->startDate = null;
         $this->endDate = null;
+        $this->numAdults = null;
         $this->groupBy = null;
     }
 
@@ -56,20 +58,26 @@ class FlightQueryBuilder
         return $this;
     }
 
+    function setNumAdults($numAdults) {
+        $this->numAdults = $numAdults;
+        return $this;
+    }
+
     function groupByDay() {
-        $this->groupBy = 'day';
+        $this->groupBy = FlightQuery::GROUP_BY_DAY;
         return $this;
     }
 
     function getFlights() {
-        return $this->queryProcessor->getFlights([
-            'origins' => $this->origins,
-            'destinations' => $this->destinations,
-            'daysBetweenFlights' => $this->daysBetweenFlights,
-            'minimumMinutesInDestination' => $this->minimumMinutesInDestination,
-            'startDate' => $this->startDate,
-            'endDate' => $this->endDate,
-            'groupBy' => $this->groupBy,
-        ]);
+        $query = new FlightQuery();
+        $query->origins =  $this->origins;
+        $query->destinations =  $this->destinations;
+        $query->daysBetweenFlights =  $this->daysBetweenFlights;
+        $query->minimumMinutesInDestination =  $this->minimumMinutesInDestination;
+        $query->startDate =  $this->startDate;
+        $query->endDate =  $this->endDate;
+        $query->numAdults =  $this->numAdults;
+        $query->groupBy =  $this->groupBy;
+        return $this->queryProcessor->getFlights($query);
     }
 }

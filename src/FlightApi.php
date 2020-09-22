@@ -17,7 +17,7 @@ class FlightApi
         $this->apiToken = config('kiwi-scanner.partner');
     }
 
-    function run($parameters)
+    function getFlights($parameters)
     {
         // TODO: This seems unreliable, are the parameters always serialized the same way?
         //       (Also, the cache could be on a higher level of abstraction)
