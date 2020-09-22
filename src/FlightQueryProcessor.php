@@ -24,7 +24,6 @@ class FlightQueryProcessor
 
     private function buildApiParameters($parameters) {
         $apiParameters = [
-            'partner' => config('kiwi-scanner.partner'),
             'curr' => 'EUR',
             'locale' => 'es',
             'flight_type' => 'round',
