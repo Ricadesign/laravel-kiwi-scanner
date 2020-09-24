@@ -59,9 +59,7 @@ class FlightSearcher
     }
 
     private function joinLocationsToKiwiFormat($locations) {
-        return implode(',', array_map(
-            function($loc){ return $loc->getKiwiFormat(); },
-            $locations));
+        return implode(',', $locations);
     }
 
     private function parseApiResponse($response) {
