@@ -23,11 +23,19 @@ class FlightSearchQueryBuilder
 
         $this->origins = [];
         $this->destinations = [];
-        $this->daysBetweenFlights = null;
+        $this->maxStopovers = null;
+        $this->nightsInDestinationFrom = null;
+        $this->nightsInDestinationTo = null;
         $this->minimumMinutesInDestination = null;
         $this->startDate = null;
         $this->endDate = null;
+        $this->returnFrom = null;
+        $this->returnTo = null;
         $this->numAdults = null;
+        $this->numChildren = null;
+        $this->numInfants = null;
+        $this->priceFrom = null;
+        $this->priceTo = null;
         $this->groupBy = null;
     }
 
@@ -41,8 +49,28 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
-    function setDaysBetweenFlights($daysBetweenFlights) {
-        $this->daysBetweenFlights = $daysBetweenFlights;
+    function setMaxStopovers($maxStopovers) {
+        $this->maxStopovers = $maxStopovers;
+        return $this;
+    }
+
+    function setNightsInDestinationFrom($nightsInDestinationFrom) {
+        $this->nightsInDestinationFrom = $nightsInDestinationFrom;
+        return $this;
+    }
+
+    function setNightsInDestinationTo($nightsInDestinationTo) {
+        $this->nightsInDestinationTo = $nightsInDestinationTo;
+        return $this;
+    }
+
+    function setReturnFrom($returnFrom) {
+        $this->returnFrom = $returnFrom;
+        return $this;
+    }
+
+    function setReturnTo($returnTo) {
+        $this->returnTo = $returnTo;
         return $this;
     }
 
@@ -66,6 +94,26 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
+    function setNumChildren($numChildren) {
+        $this->numChildren = $numChildren;
+        return $this;
+    }
+
+    function setNumInfants($numInfants) {
+        $this->numInfants = $numInfants;
+        return $this;
+    }
+
+    function setPriceFrom($priceFrom) {
+        $this->priceFrom = $priceFrom;
+        return $this;
+    }
+
+    function setPriceTo($priceTo) {
+        $this->priceTo = $priceTo;
+        return $this;
+    }
+
     function groupByDay() {
         $this->groupBy = FlightSearchQuery::GROUP_BY_DAY;
         return $this;
@@ -73,14 +121,22 @@ class FlightSearchQueryBuilder
 
     function getFlights() {
         $query = new FlightSearchQuery();
-        $query->origins =  $this->origins;
-        $query->destinations =  $this->destinations;
-        $query->daysBetweenFlights =  $this->daysBetweenFlights;
-        $query->minimumMinutesInDestination =  $this->minimumMinutesInDestination;
-        $query->startDate =  $this->startDate;
-        $query->endDate =  $this->endDate;
-        $query->numAdults =  $this->numAdults;
-        $query->groupBy =  $this->groupBy;
+        $query->origins = $this->origins;
+        $query->destinations = $this->destinations;
+        $query->maxStopovers = $this->maxStopovers;
+        $query->nightsInDestinationFrom = $this->nightsInDestinationFrom;
+        $query->nightsInDestinationTo = $this->nightsInDestinationTo;
+        $query->returnFrom = $this->returnFrom;
+        $query->returnTo = $this->returnTo;
+        $query->minimumMinutesInDestination = $this->minimumMinutesInDestination;
+        $query->startDate = $this->startDate;
+        $query->endDate = $this->endDate;
+        $query->numAdults = $this->numAdults;
+        $query->numChildren = $this->numChildren;
+        $query->numInfants = $this->numInfants;
+        $query->priceFrom = $this->priceFrom;
+        $query->priceTo = $this->priceTo;
+        $query->groupBy = $this->groupBy;
         return $this->queryProcessor->getFlights($query);
     }
 }

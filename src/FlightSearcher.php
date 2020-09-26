@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
 
 /**
- * High level interface over the Kiwi Locations API.
+ * High level interface over the Kiwi Flights API.
  */
 class FlightSearcher
 {
@@ -32,7 +32,7 @@ class FlightSearcher
             'curr' => 'EUR',
             'locale' => 'es',
             'flight_type' => 'round',
-            'max_stopovers' => 0
+            'max_stopovers' => 0,
         ];
 
         if (isset($parameters->origins))
@@ -41,10 +41,14 @@ class FlightSearcher
         if (isset($parameters->destinations))
             $apiParameters['fly_to'] = $this->joinLocationsToKiwiFormat($parameters->destinations);
 
-        if (isset($parameters->daysBetweenFlights)) {
-            $apiParameters['nights_in_dst_from'] = $parameters->daysBetweenFlights;
-            $apiParameters['nights_in_dst_to'] = $parameters->daysBetweenFlights;
-        }
+        if (isset($parameters->maxStopovers))
+            $apiParameters['max_stopovers'] = $parameters->maxStopovers;
+
+        if (isset($parameters->nightsInDestinationFrom))
+            $apiParameters['nights_in_dst_from'] = $parameters->nightsInDestinationFrom;
+
+        if (isset($parameters->nightsInDestinationTo))
+            $apiParameters['nights_in_dst_to'] = $parameters->nightsInDestinationTo;
 
         if (isset($parameters->startDate))
             $apiParameters['date_from'] = $parameters->startDate->format('d/m/Y');
@@ -52,8 +56,26 @@ class FlightSearcher
         if (isset($parameters->endDate))
             $apiParameters['date_to'] = $parameters->endDate->format('d/m/Y');
 
+        if (isset($parameters->returnFrom))
+            $apiParameters['return_from'] = $parameters->returnFrom->format('d/m/Y');
+
+        if (isset($parameters->returnTo))
+            $apiParameters['return_to'] = $parameters->returnTo->format('d/m/Y');
+
         if (isset($parameters->numAdults))
             $apiParameters['adults'] = $parameters->numAdults;
+
+        if (isset($parameters->numChildren))
+            $apiParameters['children'] = $parameters->numChildren;
+
+        if (isset($parameters->numInfants))
+            $apiParameters['infants'] = $parameters->numInfants;
+
+        if (isset($parameters->priceFrom))
+            $apiParameters['price_from'] = $parameters->priceFrom;
+
+        if (isset($parameters->priceTo))
+            $apiParameters['price_to'] = $parameters->priceTo;
 
         return $apiParameters;
     }
