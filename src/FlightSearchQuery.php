@@ -22,6 +22,7 @@ class FlightSearchQuery
     public $numInfants;
     public $priceFrom;
     public $priceTo;
+    public $onePerCity;
     public $groupBy;
 
     const GROUP_BY_DAY = 'day';

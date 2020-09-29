@@ -156,6 +156,7 @@ class FlightSearchQueryBuilder
         $query->numInfants = $this->numInfants;
         $query->priceFrom = $this->priceFrom;
         $query->priceTo = $this->priceTo;
+        $query->onePerCity = $this->onePerCity;
         $query->groupBy = $this->groupBy;
         return $this->queryProcessor->getFlights($query);
     }
