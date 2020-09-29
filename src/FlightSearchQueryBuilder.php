@@ -64,6 +64,13 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
+    public function setNightsInDestination($num)
+    {
+        $this->setNightsInDestinationFrom($num);
+        $this->setNightsInDestinationTo($num);
+        return $this;
+    }
+
     function setReturnFrom($returnFrom) {
         $this->returnFrom = $returnFrom;
         return $this;
