@@ -37,6 +37,7 @@ class FlightSearchQueryBuilder
         $this->priceFrom = null;
         $this->priceTo = null;
         $this->groupBy = null;
+        $this->onePerCity = false;
     }
 
     function addOrigin($origin) {
@@ -131,7 +132,12 @@ class FlightSearchQueryBuilder
         $this->groupBy = FlightSearchQuery::GROUP_BY_DAY;
         return $this;
     }
-
+    
+    public function setOnePerCity()
+    {
+        $this->onePerCity = true;
+        return $this;
+    }
     function getFlights() {
         $query = new FlightSearchQuery();
         $query->origins = $this->origins;

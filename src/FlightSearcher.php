@@ -76,6 +76,8 @@ class FlightSearcher
 
         if (isset($parameters->priceTo))
             $apiParameters['price_to'] = $parameters->priceTo;
+        if ($parameters->onePerCity)
+            $apiParameters['one_for_city'] = $parameters->onePerCity;
 
         return $apiParameters;
     }
