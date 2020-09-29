@@ -49,6 +49,12 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
+    public function setDestinations($destinations)
+    {
+        $this->destinations = $destinations;
+        return $this;
+    }
+
     function setMaxStopovers($maxStopovers) {
         $this->maxStopovers = $maxStopovers;
         return $this;
