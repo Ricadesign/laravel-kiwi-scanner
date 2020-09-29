@@ -17,6 +17,7 @@ class FlightSearchQueryBuilder
     private $endDate;
     private $numAdults;
     private $groupBy;
+    private $onePerCity;
 
     public function __construct($queryProcessor) {
         $this->queryProcessor = $queryProcessor;
