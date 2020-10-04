@@ -21,6 +21,11 @@ class FlightSearcher
         $apiParameters = $this->buildApiParameters($parameters);
         $response = $this->api->getFlights($apiParameters);
         //echo '<pre>'; print_r($response); echo '</pre>';
+        if (!isset($response['data'])) {
+            // TODO: Improve error handling logic
+            //echo '<pre>'; print_r($response); echo '</pre>';
+            throw new FlightOperationException();
+        }
         $response = $this->applyPostApiQueryFilters($response, $parameters);
         $flights = $this->parseApiResponse($response);
         return $this->aggregateResults($flights, $parameters);
@@ -90,8 +95,6 @@ class FlightSearcher
 
     private function parseApiResponse($response) {
         $flights = [];
-
-        // TODO: Validate if response is not error
 
         foreach ($response['data'] as $trip) {
             $flight = new RoundFlight();
