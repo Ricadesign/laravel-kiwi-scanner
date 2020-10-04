@@ -39,6 +39,8 @@ class FlightSearchQueryBuilder
         $this->priceTo = null;
         $this->groupBy = null;
         $this->onePerCity = false;
+        $this->returnFromDifferentAirport = true; // Same as KiwiAPI default!
+        $this->returnFromDifferentCity = false;
     }
 
     function addOrigin($origin) {
@@ -136,6 +138,17 @@ class FlightSearchQueryBuilder
         $this->onePerCity = $onePerCity;
         return $this;
     }
+
+    function setReturnFromDifferentAirport($returnFromDifferentAirport = true) {
+        $this->returnFromDifferentAirport = $returnFromDifferentAirport;
+        return $this;
+    }
+
+    function setReturnFromDifferentCity($returnFromDifferentCity = true) {
+        $this->returnFromDifferentCity = $returnFromDifferentCity;
+        return $this;
+    }
+
     function getFlights() {
         $query = new FlightSearchQuery();
         $query->origins = $this->origins;
@@ -154,6 +167,8 @@ class FlightSearchQueryBuilder
         $query->priceFrom = $this->priceFrom;
         $query->priceTo = $this->priceTo;
         $query->onePerCity = $this->onePerCity;
+        $query->returnFromDifferentAirport = $this->returnFromDifferentAirport;
+        $query->returnFromDifferentCity = $this->returnFromDifferentCity;
         $query->groupBy = $this->groupBy;
         return $this->queryProcessor->getFlights($query);
     }

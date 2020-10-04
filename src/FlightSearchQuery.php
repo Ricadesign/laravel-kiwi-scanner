@@ -24,6 +24,8 @@ class FlightSearchQuery
     public $priceTo;
     public $onePerCity;
     public $groupBy;
+    public $returnFromDifferentAirport;
+    public $returnFromDifferentCity;
 
     const GROUP_BY_DAY = 'day';
 }

@@ -86,6 +86,9 @@ class FlightSearcher
         if (isset($parameters->onePerCity) && $parameters->onePerCity)
             $apiParameters['one_for_city'] = $parameters->onePerCity;
 
+        if (isset($parameters->returnFromDifferentAirport))
+            $apiParameters['ret_from_diff_airport'] = $parameters->returnFromDifferentAirport;
+
         return $apiParameters;
     }
 
@@ -140,6 +143,13 @@ class FlightSearcher
                 $minutesInDestination = ($trip['route'][1]['dTimeUTC'] -
                                          $trip['route'][0]['aTimeUTC']) / 60;
                 return $minutesInDestination >= $parameters->minimumMinutesInDestination;
+            }));
+        }
+
+        if (isset($parameters->returnFromDifferentCity) && !$parameters->returnFromDifferentCity) {
+            $response['data'] = array_values(array_filter($response['data'],
+                function($trip) use ($parameters) {
+                    return $trip['route'][0]['cityTo'] == $trip['route'][1]['cityFrom'];
             }));
         }
 
