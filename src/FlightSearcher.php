@@ -149,7 +149,7 @@ class FlightSearcher
         if (isset($parameters->returnFromDifferentCity) && !$parameters->returnFromDifferentCity) {
             $response['data'] = array_values(array_filter($response['data'],
                 function($trip) use ($parameters) {
-                    return $trip['route'][0]['cityTo'] == $trip['route'][1]['cityFrom'];
+                    return $trip['route'][0]['cityCodeTo'] == $trip['route'][1]['cityCodeFrom'];
             }));
         }
 
