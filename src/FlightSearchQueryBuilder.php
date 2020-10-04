@@ -51,8 +51,7 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
-    public function setDestinations($destinations)
-    {
+    function setDestinations($destinations) {
         $this->destinations = $destinations;
         return $this;
     }
@@ -72,8 +71,7 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
-    public function setNightsInDestination($num)
-    {
+    function setNightsInDestination($num) {
         $this->setNightsInDestinationFrom($num);
         $this->setNightsInDestinationTo($num);
         return $this;
@@ -134,9 +132,8 @@ class FlightSearchQueryBuilder
         return $this;
     }
     
-    public function setOnePerCity()
-    {
-        $this->onePerCity = true;
+    function setOnePerCity($onePerCity = true) {
+        $this->onePerCity = $onePerCity;
         return $this;
     }
     function getFlights() {
