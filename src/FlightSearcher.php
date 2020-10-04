@@ -21,8 +21,8 @@ class FlightSearcher
         $apiParameters = $this->buildApiParameters($parameters);
         $response = $this->api->getFlights($apiParameters);
         //echo '<pre>'; print_r($response); echo '</pre>';
+        $response = $this->applyPostApiQueryFilters($response, $parameters);
         $flights = $this->parseApiResponse($response);
-        $flights = $this->applyPostApiQueryFilters($flights, $parameters);
         return $this->aggregateResults($flights, $parameters);
     }
 
@@ -129,14 +129,18 @@ class FlightSearcher
         return Carbon::createFromTimestamp($timeStampLocal, $timezone);
     }
 
-    private function applyPostApiQueryFilters($flights, $parameters) {
+    private function applyPostApiQueryFilters($response, $parameters) {
         if (isset($parameters->minimumMinutesInDestination)) {
-            $flights = array_values(array_filter($flights, function($f) use ($parameters) {
-                return $f->minutesInDestination >= $parameters->minimumMinutesInDestination;
+            $response['data'] = array_values(array_filter($response['data'],
+                function($trip) use ($parameters) {
+                // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
+                $minutesInDestination = ($trip['route'][1]['dTimeUTC'] -
+                                         $trip['route'][0]['aTimeUTC']) / 60;
+                return $minutesInDestination >= $parameters->minimumMinutesInDestination;
             }));
         }
 
-        return $flights;
+        return $response;
     }
 
     private function aggregateResults($flights, $parameters) {
