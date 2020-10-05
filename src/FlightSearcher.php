@@ -36,7 +36,6 @@ class FlightSearcher
             'v' => 3,
             'curr' => 'EUR',
             'locale' => 'es',
-            'flight_type' => 'round',
             'max_stopovers' => 0,
         ];
 
