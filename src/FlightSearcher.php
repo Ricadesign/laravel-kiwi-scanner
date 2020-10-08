@@ -66,6 +66,30 @@ class FlightSearcher
         if (isset($parameters->returnTo))
             $apiParameters['return_to'] = $parameters->returnTo->format('d/m/Y');
 
+        if (isset($parameters->departureTimeFrom))
+            $apiParameters['dtime_from'] = $parameters->departureTimeFrom->format('H:i');
+
+        if (isset($parameters->departureTimeTo))
+            $apiParameters['dtime_to'] = $parameters->departureTimeTo->format('H:i');
+
+        if (isset($parameters->arrivalTimeFrom))
+            $apiParameters['atime_from'] = $parameters->arrivalTimeFrom->format('H:i');
+
+        if (isset($parameters->arrivalTimeTo))
+            $apiParameters['atime_to'] = $parameters->arrivalTimeTo->format('H:i');
+
+        if (isset($parameters->returnDepartureTimeFrom))
+            $apiParameters['ret_dtime_from'] = $parameters->returnDepartureTimeFrom->format('H:i');
+
+        if (isset($parameters->returnDepartureTimeTo))
+            $apiParameters['ret_dtime_to'] = $parameters->returnDepartureTimeTo->format('H:i');
+
+        if (isset($parameters->returnArrivalTimeFrom))
+            $apiParameters['ret_atime_from'] = $parameters->returnArrivalTimeFrom->format('H:i');
+
+        if (isset($parameters->returnArrivalTimeTo))
+            $apiParameters['ret_atime_to'] = $parameters->returnArrivalTimeTo->format('H:i');
+
         if (isset($parameters->numAdults))
             $apiParameters['adults'] = $parameters->numAdults;
 

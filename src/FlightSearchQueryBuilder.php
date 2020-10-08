@@ -32,6 +32,14 @@ class FlightSearchQueryBuilder
         $this->endDate = null;
         $this->returnFrom = null;
         $this->returnTo = null;
+        $this->departureTimeFrom = null;
+        $this->departureTimeTo = null;
+        $this->arrivalTimeFrom = null;
+        $this->arrivalTimeTo = null;
+        $this->returnDepartureTimeFrom = null;
+        $this->returnDepartureTimeTo = null;
+        $this->returnArrivalTimeFrom = null;
+        $this->returnArrivalTimeTo = null;
         $this->numAdults = null;
         $this->numChildren = null;
         $this->numInfants = null;
@@ -86,6 +94,46 @@ class FlightSearchQueryBuilder
 
     function setReturnTo($returnTo) {
         $this->returnTo = $returnTo;
+        return $this;
+    }
+
+    function setDepartureTimeFrom($departureTimeFrom) {
+        $this->departureTimeFrom = $departureTimeFrom;
+        return $this;
+    }
+
+    function setDepartureTimeTo($departureTimeTo) {
+        $this->departureTimeTo = $departureTimeTo;
+        return $this;
+    }
+
+    function setArrivalTimeFrom($arrivalTimeFrom) {
+        $this->arrivalTimeFrom = $arrivalTimeFrom;
+        return $this;
+    }
+
+    function setArrivalTimeTo($arrivalTimeTo) {
+        $this->arrivalTimeTo = $arrivalTimeTo;
+        return $this;
+    }
+
+    function setReturnDepartureTimeFrom($returnDepartureTimeFrom) {
+        $this->returnDepartureTimeFrom = $returnDepartureTimeFrom;
+        return $this;
+    }
+
+    function setReturnDepartureTimeTo($returnDepartureTimeTo) {
+        $this->returnDepartureTimeTo = $returnDepartureTimeTo;
+        return $this;
+    }
+
+    function setReturnArrivalTimeFrom($returnArrivalTimeFrom) {
+        $this->returnArrivalTimeFrom = $returnArrivalTimeFrom;
+        return $this;
+    }
+
+    function setReturnArrivalTimeTo($returnArrivalTimeTo) {
+        $this->returnArrivalTimeTo = $returnArrivalTimeTo;
         return $this;
     }
 
@@ -161,6 +209,14 @@ class FlightSearchQueryBuilder
         $query->minimumMinutesInDestination = $this->minimumMinutesInDestination;
         $query->startDate = $this->startDate;
         $query->endDate = $this->endDate;
+        $query->departureTimeFrom = $this->departureTimeFrom;
+        $query->departureTimeTo = $this->departureTimeTo;
+        $query->arrivalTimeFrom = $this->arrivalTimeFrom;
+        $query->arrivalTimeTo = $this->arrivalTimeTo;
+        $query->returnDepartureTimeFrom = $this->returnDepartureTimeFrom;
+        $query->returnDepartureTimeTo = $this->returnDepartureTimeTo;
+        $query->returnArrivalTimeFrom = $this->returnArrivalTimeFrom;
+        $query->returnArrivalTimeTo = $this->returnArrivalTimeTo;
         $query->numAdults = $this->numAdults;
         $query->numChildren = $this->numChildren;
         $query->numInfants = $this->numInfants;
