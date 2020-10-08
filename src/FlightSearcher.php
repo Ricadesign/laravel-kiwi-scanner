@@ -24,7 +24,7 @@ class FlightSearcher
         if (!isset($response['data'])) {
             // TODO: Improve error handling logic
             //echo '<pre>'; print_r($response); echo '</pre>';
-            throw new FlightOperationException();
+            throw new FlightOperationException("Invalid API response");
         }
         $response = $this->applyPostApiQueryFilters($response, $parameters);
         $flights = $this->parseApiResponse($response);
@@ -81,7 +81,6 @@ class FlightSearcher
         if (isset($parameters->priceTo))
             $apiParameters['price_to'] = $parameters->priceTo;
 
-        // TODOXXX this won't work with the post API query filters!!!
         if (isset($parameters->onePerCity) && $parameters->onePerCity)
             $apiParameters['one_for_city'] = $parameters->onePerCity;
 
@@ -134,6 +133,14 @@ class FlightSearcher
     }
 
     private function applyPostApiQueryFilters($response, $parameters) {
+        $haveOnePerCity = isset($parameters->onePerCity) && $parameters->onePerCity;
+        $haveAnyPostApiQueryFilter =
+            isset($parameters->minimumMinutesInDestination) ||
+            (isset($parameters->returnFromDifferentCity) && !$parameters->returnFromDifferentCity);
+        if ($haveOnePerCity && $haveAnyPostApiQueryFilter) {
+            throw new FlightOperationException("Post-query API filters are not compatible with the one-per-city API option.");
+        }
+
         if (isset($parameters->minimumMinutesInDestination)) {
             $response['data'] = array_values(array_filter($response['data'],
                 function($trip) use ($parameters) {
