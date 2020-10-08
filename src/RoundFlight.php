@@ -7,7 +7,6 @@ namespace Ricadesign\LaravelKiwiScanner;
  */
 class RoundFlight
 {
-    public $id;
     public $price;
     public $routes;
     public $cityFrom;

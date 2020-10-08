@@ -100,7 +100,6 @@ class FlightSearcher
 
         foreach ($response['data'] as $trip) {
             $flight = new RoundFlight();
-            $flight->id = "TODO";
             $flight->price = $trip['price'];
             $flight->routes = $trip['routes'];
             $flight->cityFrom = $trip['cityFrom'];

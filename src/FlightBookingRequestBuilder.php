@@ -9,14 +9,11 @@ class FlightBookingRequestBuilder
 {
     private $flightBooker;
 
-    private $origins;
-    private $destinations;
-    private $daysBetweenFlights;
-    private $minimumMinutesInDestination;
-    private $startDate;
-    private $endDate;
+    private $bookingToken;
+    private $numBags;
     private $numAdults;
-    private $groupBy;
+    private $numChildren;
+    private $numInfants;
 
     public function __construct($flightBooker) {
         $this->flightBooker = $flightBooker;

@@ -1,2 +1,5 @@
 <?php
-class FlightOperationException extends Exception {}
+
+namespace Ricadesign\LaravelKiwiScanner;
+
+class FlightOperationException extends \Exception {}
