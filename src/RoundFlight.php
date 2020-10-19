@@ -10,7 +10,9 @@ class RoundFlight
     public $price;
     public $routes;
     public $cityFrom;
+    public $cityCodeFrom;
     public $cityTo;
+    public $cityCodeTo;
     public $airportFrom;
     public $airportTo;
     public $journeyFlightDepartureTime;
