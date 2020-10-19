@@ -47,8 +47,6 @@ class FlightSearchQueryBuilder
         $this->priceTo = null;
         $this->groupBy = null;
         $this->onePerCity = false;
-        $this->returnFromDifferentAirport = true; // Same as KiwiAPI default!
-        $this->returnFromDifferentCity = false;
     }
 
     function addOrigin($origin) {
