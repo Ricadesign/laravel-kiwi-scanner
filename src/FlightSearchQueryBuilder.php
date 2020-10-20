@@ -221,8 +221,8 @@ class FlightSearchQueryBuilder
         $query->priceFrom = $this->priceFrom;
         $query->priceTo = $this->priceTo;
         $query->onePerCity = $this->onePerCity;
-        $query->returnFromDifferentAirport = $this->returnFromDifferentAirport;
-        $query->returnFromDifferentCity = $this->returnFromDifferentCity;
+        // $query->returnFromDifferentAirport = $this->returnFromDifferentAirport;
+        // $query->returnFromDifferentCity = $this->returnFromDifferentCity;
         $query->groupBy = $this->groupBy;
         return $this->queryProcessor->getFlights($query);
     }
