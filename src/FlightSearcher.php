@@ -131,6 +131,7 @@ class FlightSearcher
             $flight->cityCodeTo = $trip['cityCodeTo'];
             $flight->airportFrom = $trip['flyFrom'];
             $flight->airportTo = $trip['flyTo'];
+            $flight->airline = $trip['airline'];
             $flight->journeyFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
                 $trip['route'][0]['dTime'], $trip['route'][0]['dTimeUTC']);
             $flight->journeyFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
