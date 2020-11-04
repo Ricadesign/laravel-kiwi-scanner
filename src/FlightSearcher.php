@@ -36,6 +36,7 @@ class FlightSearcher
             'v' => 3,
             'curr' => 'EUR',
             'locale' => 'es',
+            'limit' => 2000,
             'max_stopovers' => 0,
         ];
 
@@ -123,6 +124,7 @@ class FlightSearcher
 
         foreach ($response['data'] as $trip) {
             $flight = new RoundFlight();
+            $flight->id = $trip['id'];
             $flight->price = $trip['price'];
             $flight->routes = $trip['routes'];
             $flight->cityFrom = $trip['cityFrom'];
