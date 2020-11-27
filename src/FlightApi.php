@@ -4,6 +4,8 @@ namespace Ricadesign\LaravelKiwiScanner;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 
 /**
  * Thin layer to make requests HTTP to the Kiwi API.
@@ -41,6 +43,20 @@ class FlightApi
         });
     }
 
+    public function getConcurrentFlights($parametersArr)
+    {
+        $client = new Client(['base_uri' => self::GET_FLIGHTS_ENDPOINT]);
+        $promises = [];
+        foreach ($parametersArr as $parameters) {
+            //TODO: duplicate code
+            $parametersWithAuth = array_merge($parameters,
+                [self::TOKEN_PARAM_SEARCH => $this->apiToken]);
+            $promises[] = $client->getAsync('', ['query' => $parametersWithAuth]);
+            
+        }
+        $responses = Promise\Utils::settle($promises)->wait();
+        return array_map(function ($response){return json_decode($response['value']->getBody());}, $responses);
+    }
     /***************
      * BOOKING API *
      ***************/

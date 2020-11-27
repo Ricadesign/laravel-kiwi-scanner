@@ -12,19 +12,32 @@ class FlightSearcher
 {
     private $api;
 
-    public function __construct($api) {
+    public function __construct( FlightApi $api) {
         $this->api = $api;
     }
 
-    function getFlights($parameters)
+    function getFlights(FlightSearchQuery $parameters)
     {
-        $apiParameters = $this->buildApiParameters($parameters);
-        $response = $this->api->getFlights($apiParameters);
-        //echo '<pre>'; print_r($response); echo '</pre>';
-        if (!isset($response['data'])) {
-            // TODO: Improve error handling logic
+        if(count($parameters->destinations)>1){
+            $apiParameters = [];
+            //Concurrent petitions
+            foreach ($parameters->destinations as $destination) {
+                $cloneParameters = clone $parameters;
+                $cloneParameters->destinations = $destination;
+                $apiParameters[] = $this->buildApiParameters($cloneParameters);
+            }
+            $responses = $this->api->getConcurrentFlights($apiParameters);
+            $flights = $this->mergeAndParseResponses($responses);
+            return $flights;
+        } else {
+            $apiParameters = $this->buildApiParameters($parameters);
+            $response = $this->api->getFlights($apiParameters);
             //echo '<pre>'; print_r($response); echo '</pre>';
-            throw new FlightOperationException("Invalid API response");
+            if (!isset($response['data'])) {
+                // TODO: Improve error handling logic
+                //echo '<pre>'; print_r($response); echo '</pre>';
+                throw new FlightOperationException("Invalid API response");
+            }
         }
         $response = $this->applyPostApiQueryFilters($response, $parameters);
         $flights = $this->parseApiResponse($response);
@@ -116,13 +129,23 @@ class FlightSearcher
     }
 
     private function joinLocationsToKiwiFormat($locations) {
-        return implode(',', $locations);
+        return is_string($locations) ? $locations : implode(',', $locations);
+    }
+
+    private function mergeAndParseResponses($responses) {
+        $flights = [];
+        foreach ($responses as $response ) {
+            $flights = array_merge($flights, $this->parseApiResponse($response));
+        }
+        return $flights;
     }
 
     private function parseApiResponse($response) {
         $flights = [];
-
-        foreach ($response['data'] as $trip) {
+        $data = is_array($response) ? $response['data'] : $response->data;
+        foreach ($data as $trip) {
+            //HACK
+            $trip = (array) $trip;
             $flight = new RoundFlight();
             $flight->id = $trip['id'];
             $flight->price = $trip['price'];
@@ -134,14 +157,16 @@ class FlightSearcher
             $flight->airportFrom = $trip['flyFrom'];
             $flight->airportTo = $trip['flyTo'];
             $flight->airlines = $trip['airlines'];
+            $journey = (array)$trip['route'][0];
             $flight->journeyFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                $trip['route'][0]['dTime'], $trip['route'][0]['dTimeUTC']);
+                $journey['dTime'], $journey['dTimeUTC']);
             $flight->journeyFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                $trip['route'][0]['aTime'], $trip['route'][0]['aTimeUTC']);
+                $journey['aTime'], $journey['aTimeUTC']);
+            $return = (array)$trip['route'][1];
             $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                $trip['route'][1]['dTime'], $trip['route'][1]['dTimeUTC']);
+                $return['dTime'], $return['dTimeUTC']);
             $flight->returnFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                $trip['route'][1]['aTime'], $trip['route'][1]['aTimeUTC']);
+                $return['aTime'], $return['aTimeUTC']);
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
             $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
             $flight->bookingToken = $trip['booking_token'];
