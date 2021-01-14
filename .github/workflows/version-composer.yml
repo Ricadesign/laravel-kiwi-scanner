@@ -20,6 +20,9 @@ jobs:
           stable-tag: STABLE
           test-tag: TEST
           dev-tag: null
+          run: version-composer "${{ inputs.revision-pattern }}" "${{ inputs.preferred-type }}" "${{ inputs.stable-branch }}" "${{ inputs.test-branch }}" "${{ inputs.dev-branch }}" "${{ inputs.stable-tag }}" "${{ inputs.test-tag }}" "${{ inputs.dev-tag }}"
+          shell: bash
+
 
       - name: Create Release
         id: release
