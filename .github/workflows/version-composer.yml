@@ -36,6 +36,3 @@ jobs:
           release_name: Release ${{ steps.composer.outputs.raw-version }}
           draft: false
           prerelease: ${{ steps.composer.outputs.is-prerelease == 'true' }}
-          - run: |
-        echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC }}";
-        echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC_UTILS }}"
