@@ -1,4 +1,4 @@
-name: version-composer
+name: Workflow3
 on: push
 jobs:
   build:
@@ -11,9 +11,18 @@ jobs:
       - name: Version Composition
         id: composer
         uses: juliansangillo/version-composer@v1
+        with:
+          revision-pattern: M.m.b.p
+          preferred-type: patch
+          stable-branch: release
+          test-branch: uat
+          dev-branch: dev
+          stable-tag: STABLE
+          test-tag: TEST
+          dev-tag: null
 
       - name: Create Release
-        id: release 
+        id: release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
