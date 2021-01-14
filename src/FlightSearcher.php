@@ -4,6 +4,7 @@ namespace Ricadesign\LaravelKiwiScanner;
 
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
+use Ricadesign\LaravelKiwiScanner\Model\RoundFlight;
 
 /**
  * High level interface over the Kiwi Flights API.
