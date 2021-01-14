@@ -20,8 +20,6 @@ jobs:
           stable-tag: STABLE
           test-tag: TEST
           dev-tag: null
-          run: version-composer "${{ composer.revision-pattern }}" "${{ composer.preferred-type }}" "${{ composer.stable-branch }}" "${{ composer.test-branch }}" "${{ composer.dev-branch }}" "${{ composer.stable-tag }}" "${{ composer.test-tag }}" "${{ composer.dev-tag }}"
-          shell: bash
 
 
       - name: Create Release
