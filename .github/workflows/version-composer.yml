@@ -1,4 +1,4 @@
-name: Workflow3
+name: Workflow2
 on: push
 jobs:
   build:
@@ -13,28 +13,14 @@ jobs:
         uses: juliansangillo/version-composer@v1
         with:
           revision-pattern: M.m.b.p
-          preferred-type: patch
-          stable-branch: release
-          test-branch: uat
-          dev-branch: dev
-          stable-tag: STABLE
-          test-tag: TEST
-          dev-tag: null
-
-      - run: |
-            echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC }}";
-            echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC_UTILS }}"
-          env:
-            SRC: src
-            SRC_UTILS: src/utils
-          shell: bash
 
       - name: Create Release
         id: release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.composer.outputs.version }}
           release_name: Release ${{ steps.composer.outputs.raw-version }}
           draft: false
           prerelease: ${{ steps.composer.outputs.is-prerelease == 'true' }}
-        
