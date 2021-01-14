@@ -1,10 +1,61 @@
-name: learn-github-actions
-on: [push]
-jobs:
-  check-bats-version:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - run: npm install -g bats
-      - run: bats -v
+name: Version Composer
+author: Julian Sangillo
+description: Returns a new version identifier
+branding:
+  icon: tag
+  color: red
+inputs:
+  revision-pattern:
+    description: Custom pattern showing version structure.
+    required: false
+    default: M.m.b
+  preferred-type:
+    description: The preferred revision type to fallback to if no other type can be determined. Possible values are 'build' or 'patch'
+    required: false
+    default: build
+  stable-branch:
+    description: Name of branch in your repo that will be used for stable releases.
+    required: false
+    default: master
+  test-branch:
+    description: Name of branch in your repo that will be used for test releases.
+    required: false
+    default: test
+  dev-branch:
+    description: Name of branch in your repo that will be used for development releases.
+    required: false
+    default: develop
+  stable-tag:
+    description: Custom release tag name for stable releases. By default, stable releases have no stable tag.
+    required: false
+  test-tag:
+    description: Custom release tag name for test releases.
+    required: false
+    default: TEST
+  dev-tag:
+    description: Custom release tag name for development releases.
+    required: false
+    default: UNSTABLE
+outputs:
+  version:
+    description: The new version with the release tag appended at the end.
+    value: ${{ steps.versioning.outputs.version }}
+  raw-version:
+    description: Version without the release tag at the end.
+    value: ${{ steps.versioning.outputs.raw_version }}
+  is-prerelease:
+    description: True if this version is an unstable release (dev or test branch) or false otherwise.
+    value: ${{ steps.versioning.outputs.is_prerelease }}
+runs:
+  using: composite
+  steps:
+    - run: |
+        echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC }}";
+        echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC_UTILS }}"
+      env:
+        SRC: src
+        SRC_UTILS: src/utils
+      shell: bash
+    - id: versioning
+      run: version-composer "${{ inputs.revision-pattern }}" "${{ inputs.preferred-type }}" "${{ inputs.stable-branch }}" "${{ inputs.test-branch }}" "${{ inputs.dev-branch }}" "${{ inputs.stable-tag }}" "${{ inputs.test-tag }}" "${{ inputs.dev-tag }}"
+      shell: bash
