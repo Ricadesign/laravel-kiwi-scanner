@@ -13,7 +13,7 @@ jobs:
         uses: juliansangillo/version-composer@v1
 
       - name: Create Release
-        id: release
+        id: release 
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
