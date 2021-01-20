@@ -2,6 +2,8 @@
 
 namespace Ricadesign\LaravelKiwiScanner;
 
+use Ricadesign\LaravelKiwiScanner\Model\FlightScheduleParameter;
+
 /**
  * Information about a flight search query.
  */
@@ -17,14 +19,6 @@ class FlightSearchQuery
     public $endDate;
     public $returnFrom;
     public $returnTo;
-    public $departureTimeFrom;
-    public $departureTimeTo;
-    public $arrivalTimeFrom;
-    public $arrivalTimeTo;
-    public $returnDepartureTimeFrom;
-    public $returnDepartureTimeTo;
-    public $returnArrivalTimeFrom;
-    public $returnArrivalTimeTo;
     public $numAdults;
     public $numChildren;
     public $numInfants;

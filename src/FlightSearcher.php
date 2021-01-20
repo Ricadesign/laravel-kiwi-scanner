@@ -4,6 +4,7 @@ namespace Ricadesign\LaravelKiwiScanner;
 
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
+use Ricadesign\LaravelKiwiScanner\Model\FlightScheduleParameter;
 use Ricadesign\LaravelKiwiScanner\Model\RoundFlight;
 
 /**
@@ -45,7 +46,7 @@ class FlightSearcher
         return $this->aggregateResults($flights, $parameters);
     }
 
-    private function buildApiParameters($parameters) {
+    private function buildApiParameters(FlightSearchQuery $parameters) {
         $apiParameters = [
             'v' => 3,
             'curr' => 'EUR',
@@ -53,12 +54,16 @@ class FlightSearcher
             'limit' => 2000,
             'max_stopovers' => 0,
         ];
-
+        if (isset($parameters->destinations) && count($parameters->destinations)>1){
+            $destinationCodes = $parameters->destinations[0];
+            /** @var FlightScheduleParameter $flightSchedule FlightScheduleParameter */
+            $flightSchedule =  $parameters->destinations[1];
+        }
         if (isset($parameters->origins))
             $apiParameters['fly_from'] = $this->joinLocationsToKiwiFormat($parameters->origins);
 
-        if (isset($parameters->destinations))
-            $apiParameters['fly_to'] = $this->joinLocationsToKiwiFormat($parameters->destinations);
+        if (isset($destinationCodes))
+            $apiParameters['fly_to'] = $this->joinLocationsToKiwiFormat($destinationCodes);
 
         if (isset($parameters->maxStopovers))
             $apiParameters['max_stopovers'] = $parameters->maxStopovers;
@@ -81,29 +86,28 @@ class FlightSearcher
         if (isset($parameters->returnTo))
             $apiParameters['return_to'] = $parameters->returnTo->format('d/m/Y');
 
-        if (isset($parameters->departureTimeFrom))
-            $apiParameters['dtime_from'] = $parameters->departureTimeFrom->format('H:i');
+        if (isset($flightSchedule) && $flightSchedule != null){
+            if($flightSchedule->flightDepartureTimeFrom)
+                $apiParameters['dtime_from'] = $flightSchedule->flightDepartureTimeFrom->format('H:i');
+            if($flightSchedule->flightDepartureTimeTo)
+                $apiParameters['dtime_to'] = $flightSchedule->flightDepartureTimeTo->format('H:i');
+            if($flightSchedule->flightReturnTimeFrom)
+                $apiParameters['ret_atime_from'] = $flightSchedule->flightReturnTimeFrom->format('H:i');
+            if($flightSchedule->flightReturnTimeTo)
+                $apiParameters['ret_atime_to'] = $flightSchedule->flightReturnTimeTo->format('H:i');
+        }
 
-        if (isset($parameters->departureTimeTo))
-            $apiParameters['dtime_to'] = $parameters->departureTimeTo->format('H:i');
+        // if (isset($parameters->arrivalTimeFrom))
+        //     $apiParameters['atime_from'] = $parameters->arrivalTimeFrom->format('H:i');
 
-        if (isset($parameters->arrivalTimeFrom))
-            $apiParameters['atime_from'] = $parameters->arrivalTimeFrom->format('H:i');
+        // if (isset($parameters->arrivalTimeTo))
+        //     $apiParameters['atime_to'] = $parameters->arrivalTimeTo->format('H:i');
 
-        if (isset($parameters->arrivalTimeTo))
-            $apiParameters['atime_to'] = $parameters->arrivalTimeTo->format('H:i');
+        // if (isset($parameters->returnDepartureTimeFrom))
+        //     $apiParameters['ret_dtime_from'] = $parameters->returnDepartureTimeFrom->format('H:i');
 
-        if (isset($parameters->returnDepartureTimeFrom))
-            $apiParameters['ret_dtime_from'] = $parameters->returnDepartureTimeFrom->format('H:i');
-
-        if (isset($parameters->returnDepartureTimeTo))
-            $apiParameters['ret_dtime_to'] = $parameters->returnDepartureTimeTo->format('H:i');
-
-        if (isset($parameters->returnArrivalTimeFrom))
-            $apiParameters['ret_atime_from'] = $parameters->returnArrivalTimeFrom->format('H:i');
-
-        if (isset($parameters->returnArrivalTimeTo))
-            $apiParameters['ret_atime_to'] = $parameters->returnArrivalTimeTo->format('H:i');
+        // if (isset($parameters->returnDepartureTimeTo))
+        //     $apiParameters['ret_dtime_to'] = $parameters->returnDepartureTimeTo->format('H:i');
 
         if (isset($parameters->numAdults))
             $apiParameters['adults'] = $parameters->numAdults;
