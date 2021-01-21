@@ -3,16 +3,17 @@
 namespace Ricadesign\LaravelKiwiScanner\Model;
 
 use Carbon\Carbon;
+use phpDocumentor\Reflection\Types\Null_;
 
 /**
  * Parameters for Query
  */
 class FlightScheduleParameter
 {
-    public Carbon $flightDepartureTimeFrom;
-    public Carbon $flightDepartureTimeTo;
-    public Carbon $flightReturnTimeFrom;
-    public Carbon $flightReturnTimeTo;
+    public $flightDepartureTimeFrom;
+    public $flightDepartureTimeTo;
+    public $flightReturnTimeFrom;
+    public $flightReturnTimeTo;
     public function __construct(string $flightDepartureTimeFrom = null, string $flightDepartureTimeTo = null, string $flightReturnTimeFrom = null, string $flightReturnTimeTo = null) {
         $this->flightDepartureTimeFrom = $flightDepartureTimeFrom ? new Carbon($flightDepartureTimeFrom): null;
         $this->flightDepartureTimeTo = $flightDepartureTimeTo ? new Carbon($flightDepartureTimeTo): null;
