@@ -8,7 +8,7 @@ use Ricadesign\LaravelKiwiScanner\Model\FlightScheduleParameter;
  */
 class FlightSearchQueryBuilder
 {
-    private $queryProcessor;
+    private FlightSearcher $queryProcessor;
 
     private $origins;
     private $destinations;

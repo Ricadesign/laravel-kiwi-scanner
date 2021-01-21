@@ -26,12 +26,15 @@ class FlightSearcher
             foreach ($parameters->destinations as $destination) {
                 $cloneParameters = clone $parameters;
                 $cloneParameters->destinations = $destination;
+                //TODO: Fix in buildApiParameters
                 $apiParameters[] = $this->buildApiParameters($cloneParameters);
             }
             $responses = $this->api->getConcurrentFlights($apiParameters);
             $flights = $this->mergeAndParseResponses($responses);
             return $flights;
-        } else {
+        } else if( count($parameters->destinations) == 1) {
+            //TODO: Fix in buildApiParameters
+            $parameters->destinations = $parameters->destinations[0];
             $apiParameters = $this->buildApiParameters($parameters);
             $response = $this->api->getFlights($apiParameters);
             //echo '<pre>'; print_r($response); echo '</pre>';
