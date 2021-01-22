@@ -18,10 +18,9 @@ jobs:
         uses: juliansangillo/version-maestro@v1
         with:
           version: ${{ steps.composer.outputs.version }}
+          env:
+            SRC: src
+            SRC_UTILS: src/utils
         run: |
         echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC }}";
         echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC_UTILS }}"
-      env:
-        SRC: src
-        SRC_UTILS: src/utils
-      shell: bash
