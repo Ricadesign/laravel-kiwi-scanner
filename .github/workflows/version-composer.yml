@@ -21,6 +21,9 @@ jobs:
           env:
             SRC: src
             SRC_UTILS: src/utils
-        run: |
+            shell: bash
+        run: 
         echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC }}";
         echo "::add-path::$GITHUB_ACTION_PATH/${{ env.SRC_UTILS }}"
+        
+        run: version-maestro ${{ inputs.version }} ${{ inputs.revision-pattern }} ${{ inputs.preferred-type }}
