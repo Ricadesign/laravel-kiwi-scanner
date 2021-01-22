@@ -14,14 +14,7 @@ jobs:
         with:
           revision-pattern: M.m.b.p
 
-      - name: Create Release
-        id: release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Version Orchestration
+        uses: juliansangillo/version-maestro@v1
         with:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-          tag_name: v${{ steps.composer.outputs.version }}
-          release_name: Release ${{ steps.composer.outputs.raw-version }}
-          draft: false
-          prerelease: ${{ steps.composer.outputs.is-prerelease == 'true' }}
+          version: ${{ steps.composer.outputs.version }}
