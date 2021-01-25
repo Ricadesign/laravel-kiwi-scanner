@@ -27,7 +27,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SRC: src
-        SRC_UTILS: src/utils
+          SRC_UTILS: src/config
         with:
           tag_name: v${{ steps.composer.outputs.version }}
           release_name: Release ${{ steps.composer.outputs.raw-version }}
