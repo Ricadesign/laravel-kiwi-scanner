@@ -1,4 +1,4 @@
-name: Workflow2
+name: Workflow3
 on: push
 jobs:
   build:
@@ -13,14 +13,21 @@ jobs:
         uses: juliansangillo/version-composer@v1
         with:
           revision-pattern: M.m.b.p
+          preferred-type: patch
+          stable-branch: release
+          test-branch: uat
+          dev-branch: dev
+          stable-tag: STABLE
+          test-tag: TEST
+          dev-tag: null
 
-      - name: Version Orchestration
-        uses: juliansangillo/version-maestro@v1
+      - name: Create Release
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          version: ${{ steps.composer.outputs.version }}
-          env: 
-            SRC: src
-            SRC_UTILS: src/utils
-            shell: bash
-        
-        run: version-maestro ${{ inputs.version }} ${{ inputs.revision-pattern }} ${{ inputs.preferred-type }}
+          tag_name: v${{ steps.composer.outputs.version }}
+          release_name: Release ${{ steps.composer.outputs.raw-version }}
+          draft: false
+          prerelease: ${{ steps.composer.outputs.is-prerelease == 'true' }}
