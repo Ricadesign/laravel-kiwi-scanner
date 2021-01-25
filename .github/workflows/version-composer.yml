@@ -10,7 +10,7 @@ jobs:
 
       - name: Version Composition
         id: composer
-        uses: juliansangillo/version-composer@v1
+        uses: juliansangillo/version-composer@v1.1
         with:
           revision-pattern: M.m.b.p
           preferred-type: patch
@@ -26,8 +26,6 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SRC: src
-          SRC_UTILS: src/config
         with:
           tag_name: v${{ steps.composer.outputs.version }}
           release_name: Release ${{ steps.composer.outputs.raw-version }}
