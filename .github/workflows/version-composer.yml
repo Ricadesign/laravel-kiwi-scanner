@@ -26,6 +26,8 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SRC: src
+        SRC_UTILS: src/utils
         with:
           tag_name: v${{ steps.composer.outputs.version }}
           release_name: Release ${{ steps.composer.outputs.raw-version }}
