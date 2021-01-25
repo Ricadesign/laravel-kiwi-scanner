@@ -9,8 +9,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Version Composer
-        id: composer
-        uses: juliansangillo/version-composer@v1.1
+        uses: juliansangillo/version-composer@v1.1s
         with:
           revision-pattern: M.m.b.p
           preferred-type: patch
