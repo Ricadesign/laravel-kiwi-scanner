@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Thin layer to make requests HTTP to the Kiwi API.
@@ -39,6 +40,8 @@ class FlightApi
             $parametersWithAuth = array_merge($parameters,
                 [self::TOKEN_PARAM_SEARCH => $this->apiToken]);
             $response = Http::get(self::GET_FLIGHTS_ENDPOINT, $parametersWithAuth);
+            $uri = $response->effectiveUri();
+            Log::debug("KIWI: $uri");
             return $response->json();
         });
     }
