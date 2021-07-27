@@ -95,9 +95,9 @@ class FlightSearcher
             if($flightSchedule->flightDepartureTimeTo)
                 $apiParameters['dtime_to'] = $flightSchedule->flightDepartureTimeTo->format('H:i');
             if($flightSchedule->flightReturnTimeFrom)
-                $apiParameters['ret_dtime_from'] = $flightSchedule->flightReturnTimeFrom->format('H:i');
+                $apiParameters['ret_atime_from'] = $flightSchedule->flightReturnTimeFrom->format('H:i');
             if($flightSchedule->flightReturnTimeTo)
-                $apiParameters['ret_dtime_to'] = $flightSchedule->flightReturnTimeTo->format('H:i');
+                $apiParameters['ret_atime_to'] = $flightSchedule->flightReturnTimeTo->format('H:i');
         }
 
         // if (isset($parameters->arrivalTimeFrom))
@@ -178,6 +178,8 @@ class FlightSearcher
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
             $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
             $flight->bookingToken = $trip['booking_token'];
+            $flight->baglimit = $trip['baglimit'];
+            $flight->bags_price = $trip['bags_price'];
             $flights[] = $flight;
         }
         return $flights;
