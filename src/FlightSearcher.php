@@ -178,6 +178,8 @@ class FlightSearcher
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
             $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
             $flight->bookingToken = $trip['booking_token'];
+            $flight->departureAirline = $journey['airline'];
+            $flight->returnAirline = $return['airline'];
             $flights[] = $flight;
         }
         return $flights;
