@@ -95,9 +95,9 @@ class FlightSearcher
             if($flightSchedule->flightDepartureTimeTo)
                 $apiParameters['dtime_to'] = $flightSchedule->flightDepartureTimeTo->format('H:i');
             if($flightSchedule->flightReturnTimeFrom)
-                $apiParameters['ret_atime_from'] = $flightSchedule->flightReturnTimeFrom->format('H:i');
+                $apiParameters['ret_dtime_from'] = $flightSchedule->flightReturnTimeFrom->format('H:i');
             if($flightSchedule->flightReturnTimeTo)
-                $apiParameters['ret_atime_to'] = $flightSchedule->flightReturnTimeTo->format('H:i');
+                $apiParameters['ret_dtime_to'] = $flightSchedule->flightReturnTimeTo->format('H:i');
         }
 
         // if (isset($parameters->arrivalTimeFrom))
