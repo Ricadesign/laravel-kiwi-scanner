@@ -4,7 +4,7 @@
     
     "require": {
         "laravel/framework": "^7.0 | ^8.0",
-        "php": "^7.3 | 8^1",
+        "php": "^7.3 | ^8.1",
         "nesbot/carbon": "^2.0@dev",
         "guzzlehttp/guzzle": "^7.0"
     },
