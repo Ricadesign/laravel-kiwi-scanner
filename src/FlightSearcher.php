@@ -157,7 +157,6 @@ class FlightSearcher
             $flight = new RoundFlight();
             $flight->id = $trip['id'];
             $flight->price = $trip['price'];
-            $flight->bags_price = $trip['bags_price'][1];
             $flight->routes = $trip['route'];
             $flight->cityFrom = $trip['cityFrom'];
             $flight->cityCodeFrom = $trip['cityCodeFrom'];
