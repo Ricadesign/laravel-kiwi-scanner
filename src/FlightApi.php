@@ -10,11 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Thin layer to make requests HTTP to the Kiwi API.
- * The API Token (aka. affiliate / partner ID) is added automatically.
  */
 class FlightApi
 {
-    const TOKEN_PARAM_SEARCH = 'partner';
+    const TOKEN_AUTH = 'apikey';
     const TOKEN_PARAM_BOOKING = 'affily';
 
     private $apiToken;
@@ -24,10 +23,9 @@ class FlightApi
     }
 
     /*****************
-     * LOCATIONS API *
+     * SEARCH API *
      *****************/
-
-    const GET_FLIGHTS_ENDPOINT = 'https://api.skypicker.com/flights';
+     const GET_FLIGHTS_ENDPOINT = 'https://api.tequila.kiwi.com/v2/search';
     const GETFLIGHTS_CACHE_TIMEOUT = 300; // seconds
 
     function getFlights($parameters)
@@ -37,11 +35,10 @@ class FlightApi
         $key = json_encode($parameters);
         return Cache::remember("getflights_" . $key, self::GETFLIGHTS_CACHE_TIMEOUT,
             function() use($parameters) {
-            $parametersWithAuth = array_merge($parameters,
-                [self::TOKEN_PARAM_SEARCH => $this->apiToken]);
-            $response = Http::get(self::GET_FLIGHTS_ENDPOINT, $parametersWithAuth);
+            $response = Http::withHeaders([
+                self::TOKEN_AUTH => $this->apiToken
+            ])->get(self::GET_FLIGHTS_ENDPOINT, $parameters);
             $uri = $response->effectiveUri();
-            Log::debug("KIWI: $uri");
             return $response->json();
         });
     }
@@ -49,13 +46,10 @@ class FlightApi
     public function getConcurrentFlights($parametersArr)
     {
         $client = new Client(['base_uri' => self::GET_FLIGHTS_ENDPOINT]);
+        $headers = [self::TOKEN_AUTH => $this->apiToken];
         $promises = [];
         foreach ($parametersArr as $parameters) {
-            //TODO: duplicate code
-            $parametersWithAuth = array_merge($parameters,
-                [self::TOKEN_PARAM_SEARCH => $this->apiToken]);
-            $promises[] = $client->getAsync('', ['query' => $parametersWithAuth]);
-            
+            $promises[] = $client->getAsync('', ['headers' => $headers, 'query' => $parameters]);
         }
         $responses = Promise\Utils::settle($promises)->wait();
         return array_map(function ($response){return json_decode($response['value']->getBody());}, $responses);

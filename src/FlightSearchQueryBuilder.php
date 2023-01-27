@@ -12,6 +12,7 @@ class FlightSearchQueryBuilder
 
     private $origins;
     private $destinations;
+    private $maxStopovers;
     private $daysBetweenFlights;
     private $minimumMinutesInDestination;
     private $startDate;
@@ -19,6 +20,7 @@ class FlightSearchQueryBuilder
     private $numAdults;
     private $groupBy;
     private $onePerCity;
+    private $onePerDate;
 
     public function __construct($queryProcessor) {
         $this->queryProcessor = $queryProcessor;
@@ -40,6 +42,7 @@ class FlightSearchQueryBuilder
         $this->priceTo = null;
         $this->groupBy = null;
         $this->onePerCity = false;
+        $this->onePerDate = false;
     }
 
     function addOrigin($origin) {
@@ -137,6 +140,10 @@ class FlightSearchQueryBuilder
         $this->onePerCity = $onePerCity;
         return $this;
     }
+    function setOnePerDate($onePerDate = true) {
+        $this->onePerDate = $onePerDate;
+        return $this;
+    }
 
     function setReturnFromDifferentAirport($returnFromDifferentAirport = true) {
         $this->returnFromDifferentAirport = $returnFromDifferentAirport;
@@ -166,6 +173,7 @@ class FlightSearchQueryBuilder
         $query->priceFrom = $this->priceFrom;
         $query->priceTo = $this->priceTo;
         $query->onePerCity = $this->onePerCity;
+        $query->onePerDate = $this->onePerDate;
         // $query->returnFromDifferentAirport = $this->returnFromDifferentAirport;
         // $query->returnFromDifferentCity = $this->returnFromDifferentCity;
         $query->groupBy = $this->groupBy;

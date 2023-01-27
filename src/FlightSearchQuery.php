@@ -25,6 +25,7 @@ class FlightSearchQuery
     public $priceFrom;
     public $priceTo;
     public $onePerCity;
+    public $onePerDate;
     public $groupBy;
     public $returnFromDifferentAirport;
     public $returnFromDifferentCity;

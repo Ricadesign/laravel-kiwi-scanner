@@ -32,7 +32,7 @@ class FlightSearcher
             $responses = $this->api->getConcurrentFlights($apiParameters);
             $flights = $this->mergeAndParseResponses($responses);
             return $flights;
-        } else if( count($parameters->destinations) == 1) {
+        } else if(count($parameters->destinations) == 1) {
             //TODO: Fix in buildApiParameters
             $parameters->destinations = $parameters->destinations[0];
             $apiParameters = $this->buildApiParameters($parameters);
@@ -100,17 +100,17 @@ class FlightSearcher
                 $apiParameters['ret_dtime_to'] = $flightSchedule->flightReturnTimeTo->format('H:i');
         }
 
-        // if (isset($parameters->arrivalTimeFrom))
-        //     $apiParameters['atime_from'] = $parameters->arrivalTimeFrom->format('H:i');
+        if (isset($parameters->arrivalTimeFrom))
+            $apiParameters['atime_from'] = $parameters->arrivalTimeFrom->format('H:i');
 
-        // if (isset($parameters->arrivalTimeTo))
-        //     $apiParameters['atime_to'] = $parameters->arrivalTimeTo->format('H:i');
+        if (isset($parameters->arrivalTimeTo))
+            $apiParameters['atime_to'] = $parameters->arrivalTimeTo->format('H:i');
 
-        // if (isset($parameters->returnDepartureTimeFrom))
-        //     $apiParameters['ret_dtime_from'] = $parameters->returnDepartureTimeFrom->format('H:i');
+        if (isset($parameters->returnDepartureTimeFrom))
+            $apiParameters['ret_dtime_from'] = $parameters->returnDepartureTimeFrom->format('H:i');
 
-        // if (isset($parameters->returnDepartureTimeTo))
-        //     $apiParameters['ret_dtime_to'] = $parameters->returnDepartureTimeTo->format('H:i');
+        if (isset($parameters->returnDepartureTimeTo))
+            $apiParameters['ret_dtime_to'] = $parameters->returnDepartureTimeTo->format('H:i');
 
         if (isset($parameters->numAdults))
             $apiParameters['adults'] = $parameters->numAdults;
@@ -129,6 +129,9 @@ class FlightSearcher
 
         if (isset($parameters->onePerCity) && $parameters->onePerCity)
             $apiParameters['one_for_city'] = $parameters->onePerCity;
+
+        if (isset($parameters->onePerDate) && $parameters->onePerDate)
+            $apiParameters['one_per_date'] = $parameters->onePerDate;
 
         if (isset($parameters->returnFromDifferentAirport))
             $apiParameters['ret_from_diff_airport'] = $parameters->returnFromDifferentAirport;
@@ -167,14 +170,14 @@ class FlightSearcher
             $flight->airlines = $trip['airlines'];
             $journey = (array)$trip['route'][0];
             $flight->journeyFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                $journey['dTime'], $journey['dTimeUTC']);
+                $journey['local_departure'], $journey['utc_departure']);
             $flight->journeyFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                $journey['aTime'], $journey['aTimeUTC']);
+                $journey['local_arrival'], $journey['utc_arrival']);
             $return = (array)$trip['route'][1];
             $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                $return['dTime'], $return['dTimeUTC']);
+                $return['local_departure'], $return['utc_departure']);
             $flight->returnFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                $return['aTime'], $return['aTimeUTC']);
+                $return['local_arrival'], $return['utc_arrival']);
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
             $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
             $flight->bookingToken = $trip['booking_token'];
@@ -189,11 +192,13 @@ class FlightSearcher
         // The Kiwi API responses do not contain the timezone of the origin / destination,
         // but they contain the timestamp of the flight in both local and UTC time,
         // from which the time zone offset can be inferred
-        $timeZoneOffsetSeconds = $timeStampLocal - $timeStampUTC;
+        $timeStampLocal = new Carbon($timeStampLocal);
+        $timeStampUTC = new Carbon($timeStampUTC);
+
+        $timeZoneOffsetSeconds = $timeStampLocal->timestamp - $timeStampUTC->timestamp;
         assert(($timeZoneOffsetSeconds % 60) === 0);
         $timezone = CarbonTimeZone::createFromMinuteOffset($timeZoneOffsetSeconds / 60);
-
-        return Carbon::createFromTimestamp($timeStampLocal, $timezone);
+        return Carbon::createFromTimestamp($timeStampLocal->timestamp, $timezone);
     }
 
     private function applyPostApiQueryFilters($response, $parameters) {
@@ -209,8 +214,8 @@ class FlightSearcher
             $response['data'] = array_values(array_filter($response['data'],
                 function($trip) use ($parameters) {
                 // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
-                $minutesInDestination = ($trip['route'][1]['dTimeUTC'] -
-                                         $trip['route'][0]['aTimeUTC']) / 60;
+                $minutesInDestination = ($trip['route'][1]['utc_departure'] -
+                                         $trip['route'][0]['utc_arrival']) / 60;
                 return $minutesInDestination >= $parameters->minimumMinutesInDestination;
             }));
         }
