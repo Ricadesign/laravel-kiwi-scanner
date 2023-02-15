@@ -10,4 +10,9 @@ class FlightCheckResult
     public $flightInvalid;
     /** Verified price for the flight */
     public $price;
+
+    public $session_id;
+    public $booking_token;
+
+
 }

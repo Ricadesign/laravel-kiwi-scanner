@@ -58,13 +58,13 @@ class FlightApi
      * BOOKING API *
      ***************/
 
-    const CHECK_FLIGHTS_ENDPOINT = 'https://booking-api.skypicker.com/api/v0.1/check_flights';
+     const CHECK_FLIGHTS_ENDPOINT = 'https://api.tequila.kiwi.com/v2/booking/check_flights';
 
-    function checkFlights($parameters)
-    {
-        $parametersWithAuth = array_merge($parameters,
-            [self::TOKEN_PARAM_BOOKING => $this->apiToken]);
-        $response = Http::get(self::CHECK_FLIGHTS_ENDPOINT, $parametersWithAuth);
-        return $response->json();
-    }
+     function checkFlights($parameters)
+     {
+         $response = Http::withHeaders([
+             self::TOKEN_AUTH => $this->apiToken
+         ])->get(self::CHECK_FLIGHTS_ENDPOINT, $parameters);
+         return $response->json();
+     }
 }
