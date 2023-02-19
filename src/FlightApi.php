@@ -67,4 +67,14 @@ class FlightApi
          ])->get(self::CHECK_FLIGHTS_ENDPOINT, $parameters);
          return $response->json();
      }
+
+     const SAVE_BOOKING_ENDPOINT = 'https://api.tequila.kiwi.com/v2/booking/save_booking';
+
+     public function saveBooking($parameters)
+     {
+        $response = Http::withHeaders([
+            self::TOKEN_AUTH => $this->apiToken
+        ])->get(self::CHECK_FLIGHTS_ENDPOINT, $parameters);
+        return $response->json();
+     }
 }
