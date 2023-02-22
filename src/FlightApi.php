@@ -60,7 +60,7 @@ class FlightApi
 
      const CHECK_FLIGHTS_ENDPOINT = 'https://api.tequila.kiwi.com/v2/booking/check_flights';
 
-     function checkFlights($parameters)
+     function checkFlight($parameters)
      {
          $response = Http::withHeaders([
              self::TOKEN_AUTH => $this->apiToken
@@ -74,7 +74,27 @@ class FlightApi
      {
         $response = Http::withHeaders([
             self::TOKEN_AUTH => $this->apiToken
-        ])->get(self::CHECK_FLIGHTS_ENDPOINT, $parameters);
+        ])->post(self::SAVE_BOOKING_ENDPOINT, $parameters);
+
+        if($response->failed()){
+            throw new FlightOperationException("Invalid API response");
+        }
+
+        return $response->json();
+     }
+
+     const CONFIRM_PAYMENT_ENDPOINT = 'https://api.tequila.kiwi.com/v2/booking/confirm_payment';
+
+     public function confirmPayment($parameters)
+     {
+        $response = Http::withHeaders([
+            self::TOKEN_AUTH => $this->apiToken
+        ])->post(self::CONFIRM_PAYMENT_ENDPOINT, $parameters);
+
+        if($response->failed()){
+            throw new FlightOperationException("Invalid API response");
+        }
+
         return $response->json();
      }
 }

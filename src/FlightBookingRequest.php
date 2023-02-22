@@ -7,6 +7,7 @@ namespace Ricadesign\LaravelKiwiScanner;
  */
 class FlightBookingRequest
 {
+    //TODO: Define all needed attributes for wizard
     public $bookingToken;
     public $numBags;
     public $numAdults;

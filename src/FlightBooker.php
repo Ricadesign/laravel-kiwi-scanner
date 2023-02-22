@@ -7,102 +7,60 @@ namespace Ricadesign\LaravelKiwiScanner;
  */
 class FlightBooker
 {
-    private $api;
+  private $api;
 
-    public function __construct($api) {
-        $this->api = $api;
-    }
+  public function __construct($api)
+  {
+    $this->api = $api;
+  }
 
-    function checkFlight($flight)
-    {
-        $apiParameters = [
-            'booking_token' => $flight->bookingToken,
-            'bnum' => $flight->numBags,
-            'adults' => $flight->numAdults,
-            'children' => $flight->numChildren,
-            'infants' => $flight->numInfants,
-        ];
+  function checkFlight($flight)
+  {
+    $apiParameters = [
+      'booking_token' => $flight->bookingToken,
+      'bnum' => $flight->numBags,
+      'adults' => $flight->numAdults,
+      'children' => $flight->numChildren,
+      'infants' => $flight->numInfants,
+    ];
 
-        $response = $this->api->checkFlights($apiParameters);
-        $checkResult = new FlightCheckResult();
-        
-        $checkResult->flightChecked = $response['flights_checked'];
-        $checkResult->flightInvalid = $response['flights_invalid'];
-        $checkResult->price = $response['total'];
-        $checkResult->session_id = $response['session_id'];
-        $checkResult->booking_token = $response['booking_token'];
-        return $checkResult;
-    }
+    $response = $this->api->checkFlights($apiParameters);
+    $checkResult = new FlightCheckResult();
 
-    public function saveBooking($booking)
-    {
-        $apiParameters = [
-            "health_declaration_checked" => true,
-            "bnum" => '0',
-            'lang' => 'es',
-            'passengers' => $this->buildPassengers($booking->passengers),
-            'locale' => 'es',
-            'booking_token' => $booking->booking_token,
-            'session_id' => $booking->session_id,
-            //TODO: BUILD BAGGAGE
-            'baggage' => [
-                (object) [
-                  "combination" => [
-                    "indices" => [
-                      0,
-                      1
-                    ],
-                    "category" => "hand_bag",
-                    "conditions" => (object) [
-                      "passenger_groups" => [
-                        "adult",
-                        "child"
-                      ]
-                    ],
-                    "price" => (object) [
-                      "currency" => "EUR",
-                      "amount" => 0,
-                      "base" => 0,
-                      "service" => 0,
-                      "service_flat" => 0,
-                      "merchant" => 0
-                    ]
-                  ],
-                  "passengers" => [
-                    0,
-                    1
-                  ]
-                ]
-              ],
-        ];
+    $checkResult->flightChecked = $response['flights_checked'];
+    $checkResult->flightInvalid = $response['flights_invalid'];
+    $checkResult->price = $response['total'];
+    $checkResult->session_id = $response['session_id'];
+    $checkResult->booking_token = $response['booking_token'];
+    return $checkResult;
+  }
 
-        dd($apiParameters);
-        $response = $this->api->saveBooking($apiParameters);
-        dd($response);
-        return $response;
-    }
+  public function saveBooking($booking)
+  {
+    $apiParameters = [
+      "health_declaration_checked" => true,
+      "bnum" => '0',
+      'lang' => 'es',
+      'passengers' => $booking->passengers,
+      'locale' => 'es',
+      'booking_token' => $booking->booking_token,
+      'session_id' => $booking->session_id,
+      'baggage' => $booking->baggage
+    ];
 
-    private function buildPassengers($passengers)
-    {
-        $passengers_formatted = [];
+    $response = $this->api->saveBooking($apiParameters);
+    return $response;
+  }
 
-        foreach ($passengers as $passenger) {
-            $passengers_formatted[] = (object) [
-                "birthday" => $passenger->date_of_birth->format('Y-m-d'),
-                "category" => $passenger->type,
-                "cardno" => $passenger->card_id,
-                "expiration" => $passenger->expiration_date->format('Y-m-d'),
-                "email" => $passenger->email,
-                "name" => $passenger->name,
-                "surname" => $passenger->last_name,
-                "nationality" => "CZ",
-                "phone" => "+34$passenger->phone",
-                "title" => "ms"
-            ];
-        }
+  public function confirmPayment($booking)
+  {
+    $apiParameters = [
+      'booking_id' => $booking->booking_id,
+      'transaction_id' => $booking->transaction_id,
+    ];
 
-        return $passengers_formatted;
-    }
-
-
+    $response = $this->api->confirmPayment($apiParameters);
+    return $response;
+  }
+  
 }
