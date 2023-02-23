@@ -24,7 +24,7 @@ class FlightBooker
       'infants' => $flight->numInfants,
     ];
 
-    $response = $this->api->checkFlights($apiParameters);
+    $response = $this->api->checkFlight($apiParameters);
     $checkResult = new FlightCheckResult();
 
     $checkResult->flightChecked = $response['flights_checked'];
