@@ -14,13 +14,14 @@ class FlightSearcher
 {
     private $api;
 
-    public function __construct( FlightApi $api) {
+    public function __construct(FlightApi $api)
+    {
         $this->api = $api;
     }
 
     function getFlights(FlightSearchQuery $parameters)
     {
-        if(count($parameters->destinations)>1){
+        if (count($parameters->destinations) > 1) {
             $apiParameters = [];
             //Concurrent petitions
             foreach ($parameters->destinations as $destination) {
@@ -32,7 +33,7 @@ class FlightSearcher
             $responses = $this->api->getConcurrentFlights($apiParameters);
             $flights = $this->mergeAndParseResponses($responses);
             return $flights;
-        } else if(count($parameters->destinations) == 1) {
+        } else if (count($parameters->destinations) == 1) {
             //TODO: Fix in buildApiParameters
             $parameters->destinations = $parameters->destinations[0];
             $apiParameters = $this->buildApiParameters($parameters);
@@ -49,7 +50,22 @@ class FlightSearcher
         return $this->aggregateResults($flights, $parameters);
     }
 
-    private function buildApiParameters(FlightSearchQuery $parameters) {
+    public function getFlightsMulti($parameters)
+    {
+        $apiParameters = [
+            "requests" => $parameters
+        ];
+
+        dd($apiParameters);
+        
+        $response = $this->api->getFlightsMulti($apiParameters);
+        $flights = $this->mergeAndParseResponses($response);
+
+        return $this->aggregateResults($flights, $parameters);
+    }
+
+    private function buildApiParameters(FlightSearchQuery $parameters)
+    {
         $apiParameters = [
             'v' => 3,
             'curr' => 'EUR',
@@ -57,7 +73,7 @@ class FlightSearcher
             'limit' => 2000,
             'max_stopovers' => 0,
         ];
-        if (isset($parameters->destinations) && count($parameters->destinations)>1){
+        if (isset($parameters->destinations) && count($parameters->destinations) > 1) {
             $destinationCodes = $parameters->destinations[0];
             /** @var FlightScheduleParameter $flightSchedule FlightScheduleParameter */
             $flightSchedule =  $parameters->destinations[1];
@@ -89,14 +105,14 @@ class FlightSearcher
         if (isset($parameters->returnTo))
             $apiParameters['return_to'] = $parameters->returnTo->format('d/m/Y');
 
-        if (isset($flightSchedule) && $flightSchedule != null){
-            if($flightSchedule->flightDepartureTimeFrom)
+        if (isset($flightSchedule) && $flightSchedule != null) {
+            if ($flightSchedule->flightDepartureTimeFrom)
                 $apiParameters['dtime_from'] = $flightSchedule->flightDepartureTimeFrom->format('H:i');
-            if($flightSchedule->flightDepartureTimeTo)
+            if ($flightSchedule->flightDepartureTimeTo)
                 $apiParameters['dtime_to'] = $flightSchedule->flightDepartureTimeTo->format('H:i');
-            if($flightSchedule->flightReturnTimeFrom)
+            if ($flightSchedule->flightReturnTimeFrom)
                 $apiParameters['ret_dtime_from'] = $flightSchedule->flightReturnTimeFrom->format('H:i');
-            if($flightSchedule->flightReturnTimeTo)
+            if ($flightSchedule->flightReturnTimeTo)
                 $apiParameters['ret_dtime_to'] = $flightSchedule->flightReturnTimeTo->format('H:i');
         }
 
@@ -139,19 +155,64 @@ class FlightSearcher
         return $apiParameters;
     }
 
-    private function joinLocationsToKiwiFormat($locations) {
+    private function joinLocationsToKiwiFormat($locations)
+    {
         return is_string($locations) ? $locations : implode(',', $locations);
     }
 
-    private function mergeAndParseResponses($responses) {
+    private function mergeAndParseResponses($responses)
+    {
         $flights = [];
-        foreach ($responses as $response ) {
-            $flights = array_merge($flights, $this->parseApiResponse($response));
+        foreach ($responses as $response) {
+            $flights = array_merge($flights, $this->parseApiResponseMulti($response));
         }
         return $flights;
     }
 
-    private function parseApiResponse($response) {
+    public function parseApiResponseMulti($trip)        
+    {
+        $flights = [];
+        $trip = (array) $trip;
+        $flight = new RoundFlight();
+        $flight->price = $trip['price'];
+        $flight->routes = $trip['route'];
+        $flight->cityFrom = $trip['route'][0]['cityFrom'];
+        $flight->cityCodeFrom = $trip['route'][0]['cityCodeFrom'];
+        $flight->cityTo = $trip['route'][1]['cityTo'];
+        $flight->cityCodeTo = $trip['route'][1]['cityCodeTo'];
+        $flight->airportFrom =  $trip['route'][0]['flyFrom'];
+        $flight->airportTo =  $trip['route'][0]['flyTo'];
+        $flight->airlines = array_merge($trip['route'][0]['airlines'], $trip['route'][1]['airlines']);
+        $journey = (array)$trip['route'][0];
+        $flight->journeyFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
+            $journey['local_departure'],
+            $journey['utc_departure']
+        );
+        $flight->journeyFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
+            $journey['local_arrival'],
+            $journey['utc_arrival']
+        );
+        $return = (array)$trip['route'][1];
+        $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
+            $return['local_departure'],
+            $return['utc_departure']
+        );
+        $flight->returnFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
+            $return['local_arrival'],
+            $return['utc_arrival']
+        );
+        // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
+        $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
+        $flight->bookingToken = $trip['booking_token'];
+        $flight->departureAirline = $journey['airlines'];
+        $flight->returnAirline = $return['airlines'];
+        $flights[] = $flight;
+
+        return $flights;
+    }
+
+    private function parseApiResponse($response)
+    {
         $flights = [];
         $data = is_array($response) ? $response['data'] : $response->data;
         foreach ($data as $trip) {
@@ -170,14 +231,22 @@ class FlightSearcher
             $flight->airlines = $trip['airlines'];
             $journey = (array)$trip['route'][0];
             $flight->journeyFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                $journey['local_departure'], $journey['utc_departure']);
+                $journey['local_departure'],
+                $journey['utc_departure']
+            );
             $flight->journeyFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                $journey['local_arrival'], $journey['utc_arrival']);
+                $journey['local_arrival'],
+                $journey['utc_arrival']
+            );
             $return = (array)$trip['route'][1];
             $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                $return['local_departure'], $return['utc_departure']);
+                $return['local_departure'],
+                $return['utc_departure']
+            );
             $flight->returnFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                $return['local_arrival'], $return['utc_arrival']);
+                $return['local_arrival'],
+                $return['utc_arrival']
+            );
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
             $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
             $flight->bookingToken = $trip['booking_token'];
@@ -188,7 +257,8 @@ class FlightSearcher
         return $flights;
     }
 
-    private function parseTimeStampAndInferTimeZone($timeStampLocal, $timeStampUTC) {
+    private function parseTimeStampAndInferTimeZone($timeStampLocal, $timeStampUTC)
+    {
         // The Kiwi API responses do not contain the timezone of the origin / destination,
         // but they contain the timestamp of the flight in both local and UTC time,
         // from which the time zone offset can be inferred
@@ -201,7 +271,8 @@ class FlightSearcher
         return Carbon::createFromTimestamp($timeStampLocal->timestamp, $timezone);
     }
 
-    private function applyPostApiQueryFilters($response, $parameters) {
+    private function applyPostApiQueryFilters($response, $parameters)
+    {
         $haveOnePerCity = isset($parameters->onePerCity) && $parameters->onePerCity;
         $haveAnyPostApiQueryFilter =
             isset($parameters->minimumMinutesInDestination) ||
@@ -211,26 +282,31 @@ class FlightSearcher
         }
 
         if (isset($parameters->minimumMinutesInDestination)) {
-            $response['data'] = array_values(array_filter($response['data'],
-                function($trip) use ($parameters) {
-                // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
-                $minutesInDestination = ($trip['route'][1]['utc_departure'] -
-                                         $trip['route'][0]['utc_arrival']) / 60;
-                return $minutesInDestination >= $parameters->minimumMinutesInDestination;
-            }));
+            $response['data'] = array_values(array_filter(
+                $response['data'],
+                function ($trip) use ($parameters) {
+                    // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
+                    $minutesInDestination = ($trip['route'][1]['utc_departure'] -
+                        $trip['route'][0]['utc_arrival']) / 60;
+                    return $minutesInDestination >= $parameters->minimumMinutesInDestination;
+                }
+            ));
         }
 
         if (isset($parameters->returnFromDifferentCity) && !$parameters->returnFromDifferentCity) {
-            $response['data'] = array_values(array_filter($response['data'],
-                function($trip) use ($parameters) {
+            $response['data'] = array_values(array_filter(
+                $response['data'],
+                function ($trip) use ($parameters) {
                     return $trip['route'][0]['cityCodeTo'] == $trip['route'][1]['cityCodeFrom'];
-            }));
+                }
+            ));
         }
 
         return $response;
     }
 
-    private function aggregateResults($flights, $parameters) {
+    private function aggregateResults($flights, $parameters)
+    {
         if (isset($parameters->groupBy) && $parameters->groupBy === FlightSearchQuery::GROUP_BY_DAY) {
             $flightsByDate = [];
             foreach ($flights as $f) {

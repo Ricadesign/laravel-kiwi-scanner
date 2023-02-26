@@ -17,15 +17,17 @@ class FlightApi
     const TOKEN_PARAM_BOOKING = 'affily';
 
     private $apiToken;
+    private $apiTokenMulti;
 
     function __construct() {
         $this->apiToken = config('kiwi-scanner.partner');
+        $this->apiTokenMulti = config('kiwi-scanner.partner_multi');
     }
 
     /*****************
      * SEARCH API *
      *****************/
-     const GET_FLIGHTS_ENDPOINT = 'https://api.tequila.kiwi.com/v2/search';
+    const GET_FLIGHTS_ENDPOINT = 'https://api.tequila.kiwi.com/v2/search';
     const GETFLIGHTS_CACHE_TIMEOUT = 300; // seconds
 
     function getFlights($parameters)
@@ -41,6 +43,22 @@ class FlightApi
             $uri = $response->effectiveUri();
             return $response->json();
         });
+    }
+
+    const GET_FLIGHTS_MULTI_ENDPOINT = 'https://api.tequila.kiwi.com/v2/flights_multi';
+
+    public function getFlightsMulti($parameters)
+    {
+        $key = json_encode($parameters);
+
+        return Cache::remember("getflightsmulti_" . $key, self::GETFLIGHTS_CACHE_TIMEOUT,
+        function() use($parameters) {
+        $response = Http::withHeaders([
+            self::TOKEN_AUTH => $this->apiTokenMulti
+        ])->post(self::GET_FLIGHTS_MULTI_ENDPOINT, $parameters);
+        $uri = $response->effectiveUri();
+        return $response->json();
+    });
     }
 
     public function getConcurrentFlights($parametersArr)
