@@ -29,6 +29,7 @@ class FlightSearchQuery
     public $groupBy;
     public $returnFromDifferentAirport;
     public $returnFromDifferentCity;
+    public $flightSchedule;
 
     const GROUP_BY_DAY = 'day';
 }

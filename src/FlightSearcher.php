@@ -21,6 +21,21 @@ class FlightSearcher
 
     function getFlights(FlightSearchQuery $parameters)
     {
+        //OPTIMIZED TEQUILA REQUESTS
+        $apiParameters = $this->buildApiParameters($parameters);
+        $response = $this->api->getFlights($apiParameters);
+        //echo '<pre>'; print_r($response); echo '</pre>';
+        if (!isset($response['data'])) {
+            // TODO: Improve error handling logic
+            //echo '<pre>'; print_r($response); echo '</pre>';
+            throw new FlightOperationException("Invalid API response");
+        }
+        $response = $this->applyPostApiQueryFilters($response, $parameters);
+        $flights = $this->parseApiResponse($response);
+        return $this->aggregateResults($flights, $parameters);
+        /////
+
+        ////OLD
         if (count($parameters->destinations) > 1) {
             $apiParameters = [];
             //Concurrent petitions
@@ -48,16 +63,21 @@ class FlightSearcher
         $response = $this->applyPostApiQueryFilters($response, $parameters);
         $flights = $this->parseApiResponse($response);
         return $this->aggregateResults($flights, $parameters);
+        ////
     }
 
     public function getFlightsMulti($parameters)
     {
+        $builtParameters = [];
+
+        foreach ($parameters as $parameter) {
+            $builtParameters[] = $this->buildApiParameters($parameter);
+        };
+
         $apiParameters = [
-            "requests" => $parameters
+            "requests" => $builtParameters
         ];
 
-        dd($apiParameters);
-        
         $response = $this->api->getFlightsMulti($apiParameters);
         $flights = $this->mergeAndParseResponses($response);
 
@@ -67,16 +87,12 @@ class FlightSearcher
     private function buildApiParameters(FlightSearchQuery $parameters)
     {
         $apiParameters = [
-            'v' => 3,
             'curr' => 'EUR',
-            'locale' => 'es',
-            'limit' => 2000,
-            'max_stopovers' => 0,
+            'locale' => 'es'
         ];
-        if (isset($parameters->destinations) && count($parameters->destinations) > 1) {
-            $destinationCodes = $parameters->destinations[0];
-            /** @var FlightScheduleParameter $flightSchedule FlightScheduleParameter */
-            $flightSchedule =  $parameters->destinations[1];
+        
+        if (isset($parameters->destinations)) {
+            $destinationCodes = $parameters->destinations;
         }
         if (isset($parameters->origins))
             $apiParameters['fly_from'] = $this->joinLocationsToKiwiFormat($parameters->origins);
@@ -105,7 +121,8 @@ class FlightSearcher
         if (isset($parameters->returnTo))
             $apiParameters['return_to'] = $parameters->returnTo->format('d/m/Y');
 
-        if (isset($flightSchedule) && $flightSchedule != null) {
+        if (isset($parameters->flightSchedule) && $parameters->flightSchedule != null) {
+            $flightSchedule = $parameters->flightSchedule;
             if ($flightSchedule->flightDepartureTimeFrom)
                 $apiParameters['dtime_from'] = $flightSchedule->flightDepartureTimeFrom->format('H:i');
             if ($flightSchedule->flightDepartureTimeTo)
@@ -152,6 +169,7 @@ class FlightSearcher
         if (isset($parameters->returnFromDifferentAirport))
             $apiParameters['ret_from_diff_airport'] = $parameters->returnFromDifferentAirport;
 
+
         return $apiParameters;
     }
 
@@ -164,12 +182,12 @@ class FlightSearcher
     {
         $flights = [];
         foreach ($responses as $response) {
-            $flights = array_merge($flights, $this->parseApiResponseMulti($response));
+            $flights = array_merge($flights, $this->parseApiResponse($response));
         }
         return $flights;
     }
 
-    public function parseApiResponseMulti($trip)        
+    public function parseApiResponseMulti($trip)
     {
         $flights = [];
         $trip = (array) $trip;
