@@ -33,7 +33,6 @@ class FlightBooker
     $checkResult->session_id = $response['session_id'];
     $checkResult->booking_token = $response['booking_token'];
     $checkResult->document_need = $response['document_options']['document_need'];
-    dd($checkResult);
     return $checkResult;
   }
 
