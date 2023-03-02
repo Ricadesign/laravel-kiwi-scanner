@@ -93,8 +93,10 @@ class FlightApi
         $response = Http::withHeaders([
             self::TOKEN_AUTH => $this->apiToken
         ])->post(self::SAVE_BOOKING_ENDPOINT, $parameters);
-
+            
         if($response->failed()){
+            Log::error("Error Saving Booking");
+            Log::error($response->json());
             throw new FlightOperationException("Invalid API response");
         }
 

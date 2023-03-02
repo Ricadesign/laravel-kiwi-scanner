@@ -14,6 +14,8 @@ class FlightCheckResult
     public $session_id;
     public $booking_token;
 
+    public $baggage;
+
     public $document_need;
 
 
