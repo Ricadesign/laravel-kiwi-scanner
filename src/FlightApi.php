@@ -95,9 +95,8 @@ class FlightApi
         ])->post(self::SAVE_BOOKING_ENDPOINT, $parameters);
             
         if($response->failed()){
-            Log::error("Error Saving Booking");
             Log::error($response->json());
-            throw new FlightOperationException("Invalid API response");
+            throw new FlightOperationException("Error Saving Booking");
         }
 
         return $response->json();

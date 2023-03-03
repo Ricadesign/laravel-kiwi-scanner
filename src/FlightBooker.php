@@ -49,9 +49,15 @@ class FlightBooker
       'session_id' => $booking->session_id,
       'baggage' => $booking->baggage
     ];
-
+    
     $response = $this->api->saveBooking($apiParameters);
-    return $response;
+    
+    $bookingResult = new FlightBookingResult();
+    $bookingResult->booking_id = $response['booking_id'];
+    $bookingResult->transaction_id = $response['transaction_id'];
+    $bookingResult->eur_payment_price = $response['eur_payment_price'];
+
+    return $bookingResult;
   }
 
   public function confirmPayment($booking)
