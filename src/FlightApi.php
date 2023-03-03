@@ -83,6 +83,12 @@ class FlightApi
          $response = Http::withHeaders([
              self::TOKEN_AUTH => $this->apiToken
          ])->get(self::CHECK_FLIGHTS_ENDPOINT, $parameters);
+
+         if($response->failed()){
+            Log::error($response->json());
+            throw new FlightOperationException("Error Checking Flight");
+        }
+
          return $response->json();
      }
 
