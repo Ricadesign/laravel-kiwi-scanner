@@ -28,7 +28,8 @@ class FlightBooker
     $checkResult = new FlightCheckResult();
 
     $checkResult->flightChecked = $response['flights_checked'];
-    $checkResult->flightInvalid = $response['flights_invalid'];
+    $checkResult->flightInvalid = $response['price_change'];
+    $checkResult->priceChange = $response['flights_invalid'];
     $checkResult->price = $response['total'];
     $checkResult->session_id = $response['session_id'];
     $checkResult->booking_token = $response['booking_token'];
