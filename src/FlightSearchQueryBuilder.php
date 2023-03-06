@@ -21,6 +21,7 @@ class FlightSearchQueryBuilder
     private $groupBy;
     private $onePerCity;
     private $onePerDate;
+    private $flightSchedule;
 
     public function __construct($queryProcessor) {
         $this->queryProcessor = $queryProcessor;
@@ -43,6 +44,7 @@ class FlightSearchQueryBuilder
         $this->groupBy = null;
         $this->onePerCity = false;
         $this->onePerDate = false;
+        $this->flightSchedule = null;
     }
 
     function addOrigin($origin) {
@@ -51,12 +53,18 @@ class FlightSearchQueryBuilder
     }
 
     function addDestination(string $destination, FlightScheduleParameter $schedule = null) {
-        $this->destinations[] = [$destination, $schedule];
+        $this->destinations[] = $destination;
         return $this;
     }
 
     function setDestinations(array $destinations) {
         $this->destinations = $destinations;
+        return $this;
+    }
+
+    function setFlightSchedule(FlightScheduleParameter $schedule)
+    {
+        $this->flightSchedule = $schedule;
         return $this;
     }
 
@@ -174,6 +182,7 @@ class FlightSearchQueryBuilder
         $query->priceTo = $this->priceTo;
         $query->onePerCity = $this->onePerCity;
         $query->onePerDate = $this->onePerDate;
+        $query->flightSchedule = $this->flightSchedule;     
         // $query->returnFromDifferentAirport = $this->returnFromDifferentAirport;
         // $query->returnFromDifferentCity = $this->returnFromDifferentCity;
         $query->groupBy = $this->groupBy;

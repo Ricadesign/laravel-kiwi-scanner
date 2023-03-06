@@ -17,15 +17,17 @@ class FlightApi
     const TOKEN_PARAM_BOOKING = 'affily';
 
     private $apiToken;
+    private $apiTokenMulti;
 
     function __construct() {
         $this->apiToken = config('kiwi-scanner.partner');
+        $this->apiTokenMulti = config('kiwi-scanner.partner_multi');
     }
 
     /*****************
      * SEARCH API *
      *****************/
-     const GET_FLIGHTS_ENDPOINT = 'https://api.tequila.kiwi.com/v2/search';
+    const GET_FLIGHTS_ENDPOINT = 'https://api.tequila.kiwi.com/v2/search';
     const GETFLIGHTS_CACHE_TIMEOUT = 300; // seconds
 
     function getFlights($parameters)
@@ -43,6 +45,22 @@ class FlightApi
         });
     }
 
+    const GET_FLIGHTS_MULTI_ENDPOINT = 'https://api.tequila.kiwi.com/v2/flights_multi';
+
+    public function getFlightsMulti($parameters)
+    {
+        $key = json_encode($parameters);
+
+        return Cache::remember("getflightsmulti_" . $key, self::GETFLIGHTS_CACHE_TIMEOUT,
+        function() use($parameters) {
+        $response = Http::withHeaders([
+            self::TOKEN_AUTH => $this->apiTokenMulti
+        ])->post(self::GET_FLIGHTS_MULTI_ENDPOINT, $parameters);
+        $uri = $response->effectiveUri();
+        return $response->json();
+    });
+    }
+
     public function getConcurrentFlights($parametersArr)
     {
         $client = new Client(['base_uri' => self::GET_FLIGHTS_ENDPOINT]);
@@ -58,13 +76,50 @@ class FlightApi
      * BOOKING API *
      ***************/
 
-    const CHECK_FLIGHTS_ENDPOINT = 'https://booking-api.skypicker.com/api/v0.1/check_flights';
+     const CHECK_FLIGHTS_ENDPOINT = 'https://api.tequila.kiwi.com/v2/booking/check_flights';
 
-    function checkFlights($parameters)
-    {
-        $parametersWithAuth = array_merge($parameters,
-            [self::TOKEN_PARAM_BOOKING => $this->apiToken]);
-        $response = Http::get(self::CHECK_FLIGHTS_ENDPOINT, $parametersWithAuth);
+     function checkFlight($parameters)
+     {
+         $response = Http::withHeaders([
+             self::TOKEN_AUTH => $this->apiToken
+         ])->get(self::CHECK_FLIGHTS_ENDPOINT, $parameters);
+
+         if($response->failed()){
+            Log::error($response->json());
+            throw new FlightOperationException("Error Checking Flight");
+        }
+
+         return $response->json();
+     }
+
+     const SAVE_BOOKING_ENDPOINT = 'https://api.tequila.kiwi.com/v2/booking/save_booking';
+
+     public function saveBooking($parameters)
+     {
+        $response = Http::withHeaders([
+            self::TOKEN_AUTH => $this->apiToken
+        ])->post(self::SAVE_BOOKING_ENDPOINT, $parameters);
+            
+        if($response->failed()){
+            Log::error($response->json());
+            throw new FlightOperationException("Error Saving Booking");
+        }
+
         return $response->json();
-    }
+     }
+
+     const CONFIRM_PAYMENT_ENDPOINT = 'https://api.tequila.kiwi.com/v2/booking/confirm_payment';
+
+     public function confirmPayment($parameters)
+     {
+        $response = Http::withHeaders([
+            self::TOKEN_AUTH => $this->apiToken
+        ])->post(self::CONFIRM_PAYMENT_ENDPOINT, $parameters);
+
+        if($response->failed()){
+            throw new FlightOperationException("Invalid API response");
+        }
+
+        return $response->json();
+     }
 }
