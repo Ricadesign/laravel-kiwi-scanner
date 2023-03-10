@@ -27,6 +27,11 @@ class FlightBooker
     $response = $this->api->checkFlight($apiParameters);
     $checkResult = new FlightCheckResult();
 
+    foreach ($response['flights'] as $flight) {
+      $checkResult->airlines[] = $flight['airline']['code'];
+      
+    }
+
     $checkResult->flightChecked = $response['flights_checked'];
     $checkResult->flightInvalid = $response['price_change'];
     $checkResult->priceChange = $response['flights_invalid'];

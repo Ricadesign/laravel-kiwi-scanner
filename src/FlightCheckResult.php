@@ -20,5 +20,5 @@ class FlightCheckResult
 
     public $document_need;
 
-
+    public $airlines;
 }
