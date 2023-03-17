@@ -168,6 +168,9 @@ class FlightSearcher
 
         if (isset($parameters->returnFromDifferentAirport))
             $apiParameters['ret_from_diff_airport'] = $parameters->returnFromDifferentAirport;
+        
+            if (isset($parameters->returnFromDifferentCity))
+            $apiParameters['ret_from_diff_city'] = $parameters->returnFromDifferentCity;
 
 
         return $apiParameters;
