@@ -85,8 +85,7 @@ class FlightApi
          ])->get(self::CHECK_FLIGHTS_ENDPOINT, $parameters);
 
          if($response->failed()){
-            Log::error($response->json());
-            throw new FlightOperationException("Error Checking Flight");
+            throw new FlightOperationException($response->body());
         }
 
          return $response->json();
@@ -101,8 +100,7 @@ class FlightApi
         ])->post(self::SAVE_BOOKING_ENDPOINT, $parameters);
             
         if($response->failed()){
-            Log::error($response->json());
-            throw new FlightOperationException("Error Saving Booking");
+            throw new FlightOperationException($response->body());
         }
 
         return $response->json();
