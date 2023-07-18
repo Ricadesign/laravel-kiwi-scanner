@@ -7,9 +7,9 @@ namespace Ricadesign\LaravelKiwiScanner;
  */
 class FlightBooker
 {
-  private $api;
+  private FlightApi $api;
 
-  public function __construct($api)
+  public function __construct(FlightApi $api)
   {
     $this->api = $api;
   }
@@ -29,7 +29,7 @@ class FlightBooker
 
     foreach ($response['flights'] as $flight) {
       $checkResult->airlines[] = $flight['airline']['code'];
-      
+
     }
 
     $checkResult->flightChecked = $response['flights_checked'];
@@ -55,9 +55,9 @@ class FlightBooker
       'session_id' => $booking->session_id,
       'baggage' => $booking->baggage
     ];
-    
+
     $response = $this->api->saveBooking($apiParameters);
-    
+
     $bookingResult = new FlightBookingResult();
     $bookingResult->booking_id = $response['booking_id'];
     $bookingResult->transaction_id = $response['transaction_id'];
@@ -76,5 +76,5 @@ class FlightBooker
     $response = $this->api->confirmPayment($apiParameters);
     return $response;
   }
-  
+
 }
