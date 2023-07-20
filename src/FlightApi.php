@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 class FlightApi
 {
     const TOKEN_AUTH = 'apikey';
+    const KW_AUTH_TOKEN = 'KW-Auth-Token';
     const TOKEN_PARAM_BOOKING = 'affily';
 
     private $apiToken;
@@ -98,7 +100,7 @@ class FlightApi
         $response = Http::withHeaders([
             self::TOKEN_AUTH => $this->apiToken
         ])->post(self::SAVE_BOOKING_ENDPOINT, $parameters);
-            
+
         if($response->failed()){
             throw new FlightOperationException($response->body());
         }
@@ -120,4 +122,52 @@ class FlightApi
 
         return $response->json();
      }
+
+    /***************
+     * POSTBOOKING API *
+    ***************/
+
+    function getBookingPassengers($bookingId) {
+        $kwAuthToken = $this->getAuthorization();
+
+        $response = Http::withHeaders([
+            self::TOKEN_AUTH => $this->apiToken,
+            self::KW_AUTH_TOKEN => $kwAuthToken
+        ])->get("https://api.tequila.kiwi.com/manage/bookings/$bookingId/passengers");
+
+        if($response->failed()) throw new FlightOperationException($response->body());
+
+        return $response->json();
+    }
+
+
+    function updateBookingPassengers($bookingId, $body) {
+        $client = new Client();
+        $kwAuthToken = $this->getAuthorization();
+
+        $headers = [
+            $this::TOKEN_AUTH => $this->apiToken,
+            $this::KW_AUTH_TOKEN => $kwAuthToken,
+            'Content-Type' => 'application/json',
+          ];
+
+        $request = new Request('PATCH', "https://api.tequila.kiwi.com/manage/bookings/$bookingId/passengers", $headers, $body);
+        $res = $client->sendAsync($request)->wait();
+        return $res->getBody();
+    }
+
+
+    /***************
+     * AUTHORIZE *
+    ***************/
+
+    function getAuthorization() {
+        $response = Http::withHeaders([
+            self::TOKEN_AUTH => $this->apiToken
+        ])->post('https://api.tequila.kiwi.com/manage/create_auth_token');
+
+        return $response->json();
+
+    }
+
 }
