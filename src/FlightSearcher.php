@@ -260,14 +260,16 @@ class FlightSearcher
                 $journey['utc_arrival']
             );
             $return = (array)$trip['route'][1];
-            $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                $return['local_departure'],
-                $return['utc_departure']
-            );
-            $flight->returnFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                $return['local_arrival'],
-                $return['utc_arrival']
-            );
+            if(count($trip['route']) >= 2) {
+                $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
+                    $return['local_departure'],
+                    $return['utc_departure']
+                );
+                $flight->returnFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
+                    $return['local_arrival'],
+                    $return['utc_arrival']
+                );
+            }
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
             $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
             $flight->bookingToken = $trip['booking_token'];
