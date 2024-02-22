@@ -90,7 +90,7 @@ class FlightSearcher
             'curr' => 'EUR',
             'locale' => 'es'
         ];
-        
+
         if (isset($parameters->destinations)) {
             $destinationCodes = $parameters->destinations;
         }
@@ -168,7 +168,7 @@ class FlightSearcher
 
         if (isset($parameters->returnFromDifferentAirport))
             $apiParameters['ret_from_diff_airport'] = $parameters->returnFromDifferentAirport;
-        
+
             if (isset($parameters->returnFromDifferentCity))
             $apiParameters['ret_from_diff_city'] = $parameters->returnFromDifferentCity;
 
@@ -269,12 +269,12 @@ class FlightSearcher
                     $return['local_arrival'],
                     $return['utc_arrival']
                 );
+                $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
+                $flight->returnAirline = $return['airline'];
             }
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
-            $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
             $flight->bookingToken = $trip['booking_token'];
             $flight->departureAirline = $journey['airline'];
-            $flight->returnAirline = $return['airline'];
             $flights[] = $flight;
         }
         return $flights;
