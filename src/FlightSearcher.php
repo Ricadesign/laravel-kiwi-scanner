@@ -259,8 +259,8 @@ class FlightSearcher
                 $journey['local_arrival'],
                 $journey['utc_arrival']
             );
-            $return = (array)$trip['route'][1];
             if(count($trip['route']) >= 2) {
+                $return = (array)$trip['route'][1];
                 $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
                     $return['local_departure'],
                     $return['utc_departure']
