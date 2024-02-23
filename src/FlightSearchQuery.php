@@ -30,6 +30,9 @@ class FlightSearchQuery
     public $returnFromDifferentAirport;
     public $returnFromDifferentCity;
     public $flightSchedule;
+    public $enableVi;
+    public $adultsBaggage;
+    public $childrenBaggage;
 
     const GROUP_BY_DAY = 'day';
 }

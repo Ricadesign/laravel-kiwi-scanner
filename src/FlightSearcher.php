@@ -91,6 +91,16 @@ class FlightSearcher
             'locale' => 'es'
         ];
 
+        if(isset($parameters->enableVi)){
+            $apiParameters['enable_vi'] = $parameters->enableVi;
+        }
+        if(isset($parameters->adultsBaggage)){
+            $apiParameters['adult_hold_bag'] = $parameters->adultsBaggage;
+        }
+        if(isset($parameters->childrenBaggage)){
+            $apiParameters['child_hold_bag'] = $parameters->childrenBaggage;
+        }
+
         if (isset($parameters->destinations)) {
             $destinationCodes = $parameters->destinations;
         }
@@ -171,7 +181,6 @@ class FlightSearcher
 
             if (isset($parameters->returnFromDifferentCity))
             $apiParameters['ret_from_diff_city'] = $parameters->returnFromDifferentCity;
-
 
         return $apiParameters;
     }

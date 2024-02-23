@@ -24,6 +24,10 @@ class FlightSearchQueryBuilder
     private $returnFromDifferentAirport;
     private $returnFromDifferentCity;
     private $flightSchedule;
+    private $enableVi;
+    private $adultsBaggage;
+    private $childrenBaggage;
+
 
     public function __construct($queryProcessor) {
         $this->queryProcessor = $queryProcessor;
@@ -49,10 +53,20 @@ class FlightSearchQueryBuilder
         $this->setReturnFromDifferentAirport = null;
         $this->returnFromDifferentCity = null;
         $this->flightSchedule = null;
+        $this->enableVi = null;
+        $this->adultsBaggage = null;
+        $this->childrenBaggage = null;
+
     }
 
     function addOrigin($origin) {
         $this->origins[] = $origin;
+        return $this;
+    }
+
+    function setEnableVi(bool $enableVi)
+    {
+        $this->enableVi = $enableVi;
         return $this;
     }
 
@@ -147,7 +161,7 @@ class FlightSearchQueryBuilder
         $this->groupBy = FlightSearchQuery::GROUP_BY_DAY;
         return $this;
     }
-    
+
     function setOnePerCity($onePerCity = true) {
         $this->onePerCity = $onePerCity;
         return $this;
@@ -164,6 +178,31 @@ class FlightSearchQueryBuilder
 
     function setReturnFromDifferentCity($returnFromDifferentCity = true) {
         $this->returnFromDifferentCity = $returnFromDifferentCity;
+        return $this;
+    }
+
+    function setAdultsBaggage(int $numAdults)
+    {
+        if($numAdults == 0) return;
+        $baggage = '';
+
+        for ($i=0; $i < $numAdults; $i++) {
+            $baggage .= '1,';
+        }
+
+        $this->adultsBaggage = substr($baggage, 0, -1);
+    }
+    function setChildrenBaggage(int $numChildren)
+    {
+        if($numChildren == 0) return;
+
+        $baggage = '';
+
+        for ($i=0; $i < $numChildren; $i++) {
+            $baggage .= '1,';
+        }
+
+        $this->childrenBaggage = substr($baggage, 0, -1);
         return $this;
     }
 
@@ -186,10 +225,14 @@ class FlightSearchQueryBuilder
         $query->priceTo = $this->priceTo;
         $query->onePerCity = $this->onePerCity;
         $query->onePerDate = $this->onePerDate;
-        $query->flightSchedule = $this->flightSchedule;     
+        $query->flightSchedule = $this->flightSchedule;
         $query->returnFromDifferentAirport = $this->returnFromDifferentAirport;
         $query->returnFromDifferentCity = $this->returnFromDifferentCity;
         $query->groupBy = $this->groupBy;
+        $query->enableVi = $this->enableVi;
+        $query->adultsBaggage = $this->adultsBaggage;
+        $query->childrenBaggage = $this->childrenBaggage;
+
         return $this->queryProcessor->getFlights($query);
     }
 }
