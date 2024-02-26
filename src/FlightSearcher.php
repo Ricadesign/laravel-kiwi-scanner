@@ -260,27 +260,8 @@ class FlightSearcher
             $flight->airportTo = $trip['flyTo'];
             $flight->airlines = $trip['airlines'];
             $journey = (array)$trip['route'][0];
-            $flight->journeyFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                $journey['local_departure'],
-                $journey['utc_departure']
-            );
-            $flight->journeyFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                $journey['local_arrival'],
-                $journey['utc_arrival']
-            );
-            if(count($trip['route']) >= 2) {
-                $return = (array)$trip['route'][1];
-                $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
-                    $return['local_departure'],
-                    $return['utc_departure']
-                );
-                $flight->returnFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
-                    $return['local_arrival'],
-                    $return['utc_arrival']
-                );
-                $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
-                $flight->returnAirline = $return['airline'];
-            }
+            
+            $this->parseFlightDates($trip, $flight);
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
             $flight->bookingToken = $trip['booking_token'];
             $flight->departureAirline = $journey['airline'];
@@ -289,6 +270,44 @@ class FlightSearcher
         return $flights;
     }
 
+    private function parseFlightDates($trip, $flight){
+        $routeLength = count($trip['route']);
+        $firstFlight = (array) $trip['route'][0];
+        $journeyArrivalFlight = $firstFlight;
+        $lastFlight = (array)$trip['route'][$routeLength - 1];
+        $returnDepartureFlight = $lastFlight;
+        if( $routeLength > 2) {
+            $city = $trip['cityCodeTo'];
+            foreach ($trip['route'] as $route) {
+                if($city == $route['cityCodeTo']) {
+                    $journeyArrivalFlight = $route;
+                }
+                if($city == $route['cityCodeFrom'] ) {
+                    $returnDepartureFlight = $route;
+                }
+            }
+        }
+        $flight->journeyFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
+            $firstFlight['local_departure'],
+            $firstFlight['utc_departure']
+        );
+        $flight->journeyFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
+            $journeyArrivalFlight['local_arrival'],
+            $journeyArrivalFlight['utc_arrival']
+        );
+        if( $routeLength >= 2) {
+            $flight->returnFlightDepartureTime = $this->parseTimeStampAndInferTimeZone(
+                $returnDepartureFlight['local_departure'],
+                $returnDepartureFlight['utc_departure']
+            );
+            $flight->returnFlightArrivalTime = $this->parseTimeStampAndInferTimeZone(
+                $lastFlight['local_arrival'],
+                $lastFlight['utc_arrival']
+            );
+            $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
+            $flight->returnAirline = $lastFlight['airline'];
+        }
+    }
     private function parseTimeStampAndInferTimeZone($timeStampLocal, $timeStampUTC)
     {
         // The Kiwi API responses do not contain the timezone of the origin / destination,
