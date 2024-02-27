@@ -17,8 +17,10 @@ class RoundFlight
     public $airportTo;
     public $journeyFlightDepartureTime;
     public $journeyFlightArrivalTime;
+    public $journeyStopOvers;
     public $returnFlightDepartureTime;
     public $returnFlightArrivalTime;
+    public $returnStopOvers;
     public $minutesInDestination;
     public $bookingToken;
     public $airlines;

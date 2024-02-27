@@ -260,7 +260,7 @@ class FlightSearcher
             $flight->airportTo = $trip['flyTo'];
             $flight->airlines = $trip['airlines'];
             $journey = (array)$trip['route'][0];
-            
+
             $this->parseFlightDates($trip, $flight);
             // TODO: Account time from-to airport to-from city (or is this out-of-scope?)
             $flight->bookingToken = $trip['booking_token'];
@@ -278,9 +278,10 @@ class FlightSearcher
         $returnDepartureFlight = $lastFlight;
         if( $routeLength > 2) {
             $city = $trip['cityCodeTo'];
-            foreach ($trip['route'] as $route) {
+            foreach ($trip['route'] as $index => $route) {
                 if($city == $route['cityCodeTo']) {
                     $journeyArrivalFlight = $route;
+                    $flight->journeyStopOvers = $index;
                 }
                 if($city == $route['cityCodeFrom'] ) {
                     $returnDepartureFlight = $route;
@@ -304,6 +305,7 @@ class FlightSearcher
                 $lastFlight['local_arrival'],
                 $lastFlight['utc_arrival']
             );
+            $flight->returnStopOvers = ($routeLength - 2) - $flight->journeyStopOvers;
             $flight->minutesInDestination = $flight->returnFlightDepartureTime->diffInMinutes($flight->journeyFlightArrivalTime);
             $flight->returnAirline = $lastFlight['airline'];
         }
