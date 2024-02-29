@@ -27,6 +27,7 @@ class FlightSearchQueryBuilder
     private $enableVi;
     private $adultsBaggage;
     private $childrenBaggage;
+    private $maxFlyDuration;
 
 
     public function __construct($queryProcessor) {
@@ -56,6 +57,7 @@ class FlightSearchQueryBuilder
         $this->enableVi = null;
         $this->adultsBaggage = null;
         $this->childrenBaggage = null;
+        $this->maxFlyDuration = null;
 
     }
 
@@ -206,6 +208,11 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
+    function setMaxFlyDuration($duration) {
+        $this->maxFlyDuration = $duration;
+        return $this;
+    }
+
     function getFlights() {
         $query = new FlightSearchQuery();
         $query->origins = $this->origins;
@@ -232,6 +239,7 @@ class FlightSearchQueryBuilder
         $query->enableVi = $this->enableVi;
         $query->adultsBaggage = $this->adultsBaggage;
         $query->childrenBaggage = $this->childrenBaggage;
+        $query->maxFlyDuration = $this->maxFlyDuration;
 
         return $this->queryProcessor->getFlights($query);
     }

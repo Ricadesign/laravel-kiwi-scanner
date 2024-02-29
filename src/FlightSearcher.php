@@ -90,7 +90,9 @@ class FlightSearcher
             'curr' => 'EUR',
             'locale' => 'es'
         ];
-
+        if(isset($parameters->maxFlyDuration)){
+            $apiParameters['max_fly_duration'] = $parameters->maxFlyDuration;
+        }
         if(isset($parameters->enableVi)){
             $apiParameters['enable_vi'] = $parameters->enableVi;
         }

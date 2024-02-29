@@ -33,6 +33,7 @@ class FlightSearchQuery
     public $enableVi;
     public $adultsBaggage;
     public $childrenBaggage;
+    public $maxFlyDuration;
 
     const GROUP_BY_DAY = 'day';
 }
