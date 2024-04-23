@@ -181,8 +181,10 @@ class FlightSearcher
         if (isset($parameters->returnFromDifferentAirport))
             $apiParameters['ret_from_diff_airport'] = $parameters->returnFromDifferentAirport;
 
-            if (isset($parameters->returnFromDifferentCity))
-            $apiParameters['ret_from_diff_city'] = $parameters->returnFromDifferentCity;
+        if (isset($parameters->returnFromDifferentCity))
+        $apiParameters['ret_from_diff_city'] = $parameters->returnFromDifferentCity;
+
+        $apiParameters['sort'] = 'quality';
 
         return $apiParameters;
     }
