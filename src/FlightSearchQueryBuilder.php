@@ -2,13 +2,14 @@
 
 namespace Ricadesign\LaravelKiwiScanner;
 
+use App\Flights\FlightSearcherInterface;
 use Ricadesign\LaravelKiwiScanner\Model\FlightScheduleParameter;
 /**
  * Builder class for flight search queries.
  */
 class FlightSearchQueryBuilder
 {
-    private FlightSearcher $queryProcessor;
+    private FlightSearcherInterface $queryProcessor;
 
     private $origins;
     private $destinations;
@@ -28,6 +29,9 @@ class FlightSearchQueryBuilder
     private $adultsBaggage;
     private $childrenBaggage;
     private $maxFlyDuration;
+    private $departureToken;
+    private $bookingToken;
+    private $type;
 
 
     public function __construct($queryProcessor) {
@@ -58,6 +62,8 @@ class FlightSearchQueryBuilder
         $this->adultsBaggage = null;
         $this->childrenBaggage = null;
         $this->maxFlyDuration = null;
+        $this->departureToken = null;
+        $this->bookingToken = null;
 
     }
 
@@ -69,6 +75,21 @@ class FlightSearchQueryBuilder
     function setEnableVi(bool $enableVi)
     {
         $this->enableVi = $enableVi;
+        return $this;
+    }
+
+    function setType($type) {
+        $this->type = $type;
+        return $this;
+    }
+
+    function setDepartureToken(string $departureToken){
+        $this->departureToken = $departureToken;
+        return $this;
+    }
+
+    function setBookingToken(string $bookingToken){
+        $this->bookingToken = $bookingToken;
         return $this;
     }
 
@@ -240,6 +261,9 @@ class FlightSearchQueryBuilder
         $query->adultsBaggage = $this->adultsBaggage;
         $query->childrenBaggage = $this->childrenBaggage;
         $query->maxFlyDuration = $this->maxFlyDuration;
+        $query->departureToken = $this->departureToken;
+        $query->bookingToken = $this->bookingToken;
+        $query->type = $this->type;
 
         return $this->queryProcessor->getFlights($query);
     }
