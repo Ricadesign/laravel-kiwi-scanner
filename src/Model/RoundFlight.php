@@ -26,4 +26,5 @@ class RoundFlight
     public $airlines;
     public $totalDuration;
     public $departureToken;
+    public $layovers;
 }

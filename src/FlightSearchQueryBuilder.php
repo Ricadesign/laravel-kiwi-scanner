@@ -67,6 +67,38 @@ class FlightSearchQueryBuilder
 
     }
 
+
+    function resetQuery() {
+        $this->origins = [];
+        $this->destinations = [];
+        $this->maxStopovers = null;
+        $this->nightsInDestinationFrom = null;
+        $this->nightsInDestinationTo = null;
+        $this->minimumMinutesInDestination = null;
+        $this->startDate = null;
+        $this->endDate = null;
+        $this->returnFrom = null;
+        $this->returnTo = null;
+        $this->numAdults = null;
+        $this->numChildren = null;
+        $this->numInfants = null;
+        $this->priceFrom = null;
+        $this->priceTo = null;
+        $this->groupBy = null;
+        $this->onePerCity = false;
+        $this->onePerDate = false;
+        $this->setReturnFromDifferentAirport = null;
+        $this->returnFromDifferentCity = null;
+        $this->flightSchedule = null;
+        $this->enableVi = null;
+        $this->adultsBaggage = null;
+        $this->childrenBaggage = null;
+        $this->maxFlyDuration = null;
+        $this->departureToken = null;
+        $this->bookingToken = null;
+        return $this;
+    }
+
     function addOrigin($origin) {
         $this->origins[] = $origin;
         return $this;
