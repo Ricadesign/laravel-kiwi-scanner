@@ -2,13 +2,14 @@
 
 namespace Ricadesign\LaravelKiwiScanner;
 
+use App\Flights\FlightSearcherInterface;
 use Ricadesign\LaravelKiwiScanner\Model\FlightScheduleParameter;
 /**
  * Builder class for flight search queries.
  */
 class FlightSearchQueryBuilder
 {
-    private FlightSearcher $queryProcessor;
+    private FlightSearcherInterface $queryProcessor;
 
     private $origins;
     private $destinations;
@@ -28,6 +29,9 @@ class FlightSearchQueryBuilder
     private $adultsBaggage;
     private $childrenBaggage;
     private $maxFlyDuration;
+    private $departureToken;
+    private $bookingToken;
+    private $type;
 
 
     public function __construct($queryProcessor) {
@@ -58,7 +62,41 @@ class FlightSearchQueryBuilder
         $this->adultsBaggage = null;
         $this->childrenBaggage = null;
         $this->maxFlyDuration = null;
+        $this->departureToken = null;
+        $this->bookingToken = null;
 
+    }
+
+
+    function resetQuery() {
+        $this->origins = [];
+        $this->destinations = [];
+        $this->maxStopovers = null;
+        $this->nightsInDestinationFrom = null;
+        $this->nightsInDestinationTo = null;
+        $this->minimumMinutesInDestination = null;
+        $this->startDate = null;
+        $this->endDate = null;
+        $this->returnFrom = null;
+        $this->returnTo = null;
+        $this->numAdults = null;
+        $this->numChildren = null;
+        $this->numInfants = null;
+        $this->priceFrom = null;
+        $this->priceTo = null;
+        $this->groupBy = null;
+        $this->onePerCity = false;
+        $this->onePerDate = false;
+        $this->setReturnFromDifferentAirport = null;
+        $this->returnFromDifferentCity = null;
+        $this->flightSchedule = null;
+        $this->enableVi = null;
+        $this->adultsBaggage = null;
+        $this->childrenBaggage = null;
+        $this->maxFlyDuration = null;
+        $this->departureToken = null;
+        $this->bookingToken = null;
+        return $this;
     }
 
     function addOrigin($origin) {
@@ -69,6 +107,21 @@ class FlightSearchQueryBuilder
     function setEnableVi(bool $enableVi)
     {
         $this->enableVi = $enableVi;
+        return $this;
+    }
+
+    function setType($type) {
+        $this->type = $type;
+        return $this;
+    }
+
+    function setDepartureToken(string $departureToken){
+        $this->departureToken = $departureToken;
+        return $this;
+    }
+
+    function setBookingToken(string $bookingToken){
+        $this->bookingToken = $bookingToken;
         return $this;
     }
 
@@ -183,16 +236,10 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
-    function setAdultsBaggage(int $numAdults)
+    function setAdultsBaggage(bool $bags)
     {
-        if($numAdults == 0) return;
-        $baggage = '';
-
-        for ($i=0; $i < $numAdults; $i++) {
-            $baggage .= '1,';
-        }
-
-        $this->adultsBaggage = substr($baggage, 0, -1);
+        $this->adultsBaggage = $bags ? 1 : 0;
+        return $this;
     }
     function setChildrenBaggage(int $numChildren)
     {
@@ -240,6 +287,9 @@ class FlightSearchQueryBuilder
         $query->adultsBaggage = $this->adultsBaggage;
         $query->childrenBaggage = $this->childrenBaggage;
         $query->maxFlyDuration = $this->maxFlyDuration;
+        $query->departureToken = $this->departureToken;
+        $query->bookingToken = $this->bookingToken;
+        $query->type = $this->type;
 
         return $this->queryProcessor->getFlights($query);
     }
