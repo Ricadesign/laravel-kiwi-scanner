@@ -236,16 +236,10 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
-    function setAdultsBaggage(int $numAdults)
+    function setAdultsBaggage(bool $bags)
     {
-        if($numAdults == 0) return;
-        $baggage = '';
-
-        for ($i=0; $i < $numAdults; $i++) {
-            $baggage .= '1,';
-        }
-
-        $this->adultsBaggage = substr($baggage, 0, -1);
+        $this->adultsBaggage = $bags ? 1 : 0;
+        return $this;
     }
     function setChildrenBaggage(int $numChildren)
     {
