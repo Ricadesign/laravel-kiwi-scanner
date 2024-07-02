@@ -34,6 +34,9 @@ class FlightSearchQuery
     public $adultsBaggage;
     public $childrenBaggage;
     public $maxFlyDuration;
+    public $departureToken;
+    public $bookingToken;
+    public $type;
 
     const GROUP_BY_DAY = 'day';
 }
