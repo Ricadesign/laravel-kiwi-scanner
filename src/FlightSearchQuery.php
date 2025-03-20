@@ -37,6 +37,8 @@ class FlightSearchQuery
     public $departureToken;
     public $bookingToken;
     public $type;
+    public $skipDates;
+
 
     const GROUP_BY_DAY = 'day';
 }

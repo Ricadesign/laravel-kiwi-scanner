@@ -32,6 +32,8 @@ class FlightSearchQueryBuilder
     private $departureToken;
     private $bookingToken;
     private $type;
+    private $skipDates;
+
 
 
     public function __construct($queryProcessor) {
@@ -64,6 +66,7 @@ class FlightSearchQueryBuilder
         $this->maxFlyDuration = null;
         $this->departureToken = null;
         $this->bookingToken = null;
+        $this->skipDates = [];
 
     }
 
@@ -96,6 +99,7 @@ class FlightSearchQueryBuilder
         $this->maxFlyDuration = null;
         $this->departureToken = null;
         $this->bookingToken = null;
+        $this->skipDates = [];
         return $this;
     }
 
@@ -260,6 +264,11 @@ class FlightSearchQueryBuilder
         return $this;
     }
 
+    function setSkipDates($dates){
+        $this->skipDates = $dates;
+        return $this;
+    }
+
     function getFlights() {
         $query = new FlightSearchQuery();
         $query->origins = $this->origins;
@@ -290,6 +299,7 @@ class FlightSearchQueryBuilder
         $query->departureToken = $this->departureToken;
         $query->bookingToken = $this->bookingToken;
         $query->type = $this->type;
+        $query->skipDates = $this->skipDates;
 
         return $this->queryProcessor->getFlights($query);
     }
